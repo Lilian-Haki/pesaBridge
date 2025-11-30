@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>LoanApp</title>
+</head><!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="styles/css/style.css">
+    <title>Eventix</title>
+</head>
+<body>
+<style>
+    body{
+    margin: 0;
+    height: 0;
+    font-family: "Poppins";
+}
+/*top navigation*/
+nav{
+    background-color: #d5d3d3;
+    display: flex;
+    margin: 20px 30px;
+    border-radius: 7px;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    color: #434343;
+}
+.eventix{
+    height: 40px;
+    width: 100px;
+    background-color: #3232af;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 20px;
+    margin-right: 100px;
+}
+.ticket{
+    height: 30px;
+    width: 110px;
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-left: 100px;
+}
+.menu-list ul{
+    display: flex;
+    list-style: none;
+}
+li a{
+    padding: 15px;
+    text-decoration: none;
+    color: black;
+}
+select{
+    border: none;
+    margin-left: -15px;
+    background-color: transparent;
+}
+/*body section*/
+main{
+    margin: 0 30px;
+    display: flex;
+    gap: 50px;
+}
+.hero{
+    display: flex;
+}
+.section1{
+    margin-right: 200px;
+}
+.section1 h2{
+    font-size: 40px;
+    font-weight: bold;
+    color: #171717;
+}
+.section1 h3{
+    color: blue;
+    font-weight: 700;
+}
+.section1 p{
+    color: #434343;
+}
+.section1 h4{
+    font-weight: 600;
+    color: #353434;
+}
+.section1 h4 i{
+    margin-right: 10px;
+    color: blue;
+}
+.section1-buttons button{
+    font-size: 13px;
+    height: 40px;
+    width: 130px;
+    border-radius: 7px;
+}
+.section1-buttons .b1{
+    background-color: blue;
+    color: #d5d3d3;
+    font-weight: bold;
+    border: indigo;
+    margin-right: 9px;
+}
+.section1-buttons .b2{
+    color: blue;
+    font-weight: bold;
+}
+.section2{
+    display: flex;
+}
+.section2 .wrapper{
+    border-radius: 30px;
+}
+.section2 img {
+    height: 450px;
+    width: 550px;
+    margin-right: -160px;
+    margin-top: 90px;
+    /*clip-path: polygon(5% 0%, 100% 0%, 150% 80%, 0% 80%);*/
+    border-radius: 30px;
+}
+    /*clip-path: polygon(0% 15%,15% 0%, 100% 0%,85% 15%,85% 100%,100% 85%,15% 100%,0% 85%);*/
+.section2-buttons{
+    margin-top: 150px;
+}
+.section2-buttons button{
+    margin-top: 20px;
+    width: 180px;
+    height: 60px;
+    border-radius: 30px;
+    border: blue;
+    font-weight: 600;
+    color: #333333;
+}
+.section2-buttons button i{
+    color: blue;
+    padding: 10px;
+    font-size: large;
+}
+
+</style>
+<nav>
+    <div>
+    <button class="eventix">Eventix</button>
+    </div>
+    <div class="menu-list">
+        <ul>
+            <li class="home"><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Schedule</a></li>
+            <li><a href="">Speakers</a></li>
+            <li><a href="">Venue</a></li>
+            <li><a href="">More Pages</a>
+            <select>
+            </select>
+            </li>
+            <li><a href="">Dropdown</a>
+            <select>
+            </select>
+            </li>
+            <li><a href="">Contact</a></li>
+        </ul>
+    </div>
+    <div>
+        <button class="ticket">Buy Tickets</button>
+    </div>
+</nav>
+
+<main>
+    <div class="row hero">
+    <div class="col-6 section1">
+    <h2>Global Tech Summit 2026</h2>
+        <h3>Shaping the Future of Innovation</h3>
+        <p>Join industry leaders, innovators, and visionaries for three days of groundbreaking discussions, networking opportunities, and transformative insights that will define the next decade of technology.</p>
+        <h4><i class="bi bi-calendar-event"></i>March 15-17, 2026</h4>
+        <h4><i class="bi bi-geo-alt"></i>San Francisco Convention Center</h4>
+        <h4><i class="bi bi-people"></i>5000+ Attendees Expected</h4>
+        <div class="section1-buttons">
+            <button class="b1">REGISTER NOW</button>
+            <button class="b2">VIEW SCHEDULE</button>
+        </div>
+        <h4>Event Starts In:</h4>
+        <h4>Timer/Countdown</h4>
+    </div>
+    <div class="col-6 section2">
+        <div class="wrapper">
+        <img src="styles/images/summit.jpg" alt="">
+        </div>
+        <div class="section2-buttons">
+            <button><i class="bi bi-award"></i>Premium Speakers</button>
+            <button><i class="bi bi-wifi"></i>Live Streaming</button>
+            <button><i class="bi bi-gift"></i>Networking Events</button>
+        </div>
+    </div>
+    </div>
+</main>
+</body>
+</html>
+<body>
+
+</body>
+</html>

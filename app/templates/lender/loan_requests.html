@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loan Requests</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="p-4 bg-gray-100">
+
+<h1 class="text-xl font-bold mb-4">Incoming Loan Requests</h1>
+
+<div class="space-y-4">
+
+    <!-- SAMPLE REQUEST CARD (repeat this with a loop later) -->
+    <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="font-semibold text-lg">Borrower: John Doe</h2>
+        <p>Amount Requested: <span class="font-bold">KES 15,000</span></p>
+        <p>Purpose: Business Startup</p>
+        <p>Duration: 3 Months</p>
+
+        <div class="flex gap-2 mt-4">
+            <a href="{% url 'approve_loan' 1 %}"
+               class="flex-1 bg-green-600 text-white p-2 rounded text-center">
+               Approve
+            </a>
+
+            <a href="{% url 'reject_loan' 1 %}"
+               class="flex-1 bg-red-600 text-white p-2 rounded text-center">
+               Reject
+            </a>
+        </div>
+    </div>
+
+    <!-- ANOTHER SAMPLE -->
+    <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="font-semibold text-lg">Borrower: Jane Smith</h2>
+        <p>Amount Requested: <span class="font-bold">KES 8,000</span></p>
+        <p>Purpose: Rent</p>
+
+        <div class="flex gap-2 mt-4">
+            <a href="{% url 'approve_loan' 2 %}"
+               class="flex-1 bg-green-600 text-white p-2 rounded text-center">
+               Approve
+            </a>
+
+            <a href="{% url 'reject_loan' 2 %}"
+               class="flex-1 bg-red-600 text-white p-2 rounded text-center">
+               Reject
+            </a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

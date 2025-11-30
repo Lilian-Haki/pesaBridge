@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Apply Loan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-4 bg-gray-100">
+
+<h1 class="text-xl font-bold mb-4">Apply for a Loan</h1>
+
+<div class="bg-white p-4 rounded-lg shadow max-w-md mx-auto">
+
+    <form method="POST" class="space-y-4">
+        {% csrf_token %}
+
+        <div>
+            <label class="block font-semibold">Loan Amount</label>
+            <input type="number" name="amount" required
+                   class="w-full border p-2 rounded" placeholder="Enter amount">
+        </div>
+
+        <div>
+            <label class="block font-semibold">Loan Purpose</label>
+            <input type="text" name="purpose" required
+                   class="w-full border p-2 rounded" placeholder="e.g Business, School fees">
+        </div>
+
+        <div>
+            <label class="block font-semibold">Repayment Period</label>
+            <select name="duration" required class="w-full border p-2 rounded">
+                <option value="1">1 Month</option>
+                <option value="2">2 Months</option>
+                <option value="3">3 Months</option>
+                <option value="6">6 Months</option>
+            </select>
+        </div>
+
+        <button class="bg-blue-600 w-full text-white p-2 rounded hover:bg-blue-700">
+            Submit Loan Application
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

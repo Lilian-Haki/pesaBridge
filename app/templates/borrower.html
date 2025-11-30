@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Borrower Dashboard - LoanApp</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- HEADER -->
+  <header class="bg-green-500 text-white p-4 flex justify-between items-center">
+  <h1 class="text-xl sm:text-2xl font-bold">PesaBridge</h1>
+  <div class="flex items-center space-x-4">
+    <!-- Notification -->
+    <a href="{% url 'notifications' %}" class="hover:text-gray-200">
+        <span class="absolute -top-2 -right-2 bg-red-600 text-xs font-bold rounded-full px-2 py-0.5">
+     {{ unread_count }}
+     </span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3c0 .379-.214.725-.595.895L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+      </svg>
+    </a>
+
+    <!-- Profile -->
+    <a href="{% url 'profile' %}" class="hover:text-gray-200">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M5.121 17.804A9 9 0 1118.879 6.196 9 9 0 015.121 17.804z"></path>
+      </svg>
+    </a>
+
+    <!-- Logout -->
+    <a href="{% url 'logout' %}" class="hover:text-gray-200">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 11-4 0v-1m0-8V7a2 2 0 114 0v1"></path>
+      </svg>
+    </a>
+  </div>
+</header>
+
+
+  <div class="flex flex-col sm:flex-row">
+
+    <!-- SIDEBAR (collapses to top on mobile) -->
+    <aside class="bg-white p-4 w-full sm:w-64 sm:h-screen border-b sm:border-b-0">
+      <h2 class="font-semibold mb-4 text-lg sm:text-base">Menu</h2>
+      <ul class="flex sm:block gap-4 sm:space-y-2 text-gray-600 text-sm sm:text-base overflow-x-auto">
+        <li><a href="">Dashboard</a></li>
+          <li><a href="{% url 'my_loans' %}">Loans</a></li>
+          <li><a href="">Apply</a></li>
+          <li><a href="">Messages</a></li>
+          <li><a href="">Settings</a></li>
+      </ul>
+    </aside>
+
+    <!-- MAIN SECTION -->
+    <main class="flex-1 p-4 sm:p-6">
+        <h1 class="text-xl font-semibold">Welcome, {{ name }} 👋</h1>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+
+        <div class="bg-white p-4 rounded shadow">
+          <h3 class="font-semibold text-lg">Upcoming Repayment</h3>
+          <p class="text-sm text-gray-600">
+            Next payment: KES 12,000 • Due: Dec 5, 2025
+          </p>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow">
+          <h3 class="font-semibold text-lg">Active Loans</h3>
+          <p class="text-sm text-gray-600">
+            2 active loans • Total outstanding: KES 45,000
+          </p>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow sm:col-span-2">
+          <h3 class="font-semibold text-lg">Apply for Loan</h3>
+          <p class="text-sm text-gray-600">
+            Start a new application — quick & easy
+          </p>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+</body>
+</html>
