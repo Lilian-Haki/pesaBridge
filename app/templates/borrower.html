@@ -52,8 +52,9 @@
       <ul class="flex sm:block gap-4 sm:space-y-2 text-gray-600 text-sm sm:text-base overflow-x-auto">
         <li><a href="">Dashboard</a></li>
           <li><a href="{% url 'my_loans' %}">Loans</a></li>
-          <li><a href="">Apply</a></li>
-          <li><a href="">Messages</a></li>
+          <li><a href="{% url 'apply_loan' %}">Apply</a></li>
+          <li><a href="{% url 'repay_loan' %}">Repay loan</a></li>
+          <li><a href="{% url 'notifications' %}">Messages</a></li>
           <li><a href="">Settings</a></li>
       </ul>
     </aside>

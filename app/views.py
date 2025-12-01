@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login
 from .forms import LoanApplicationForm, RegisterForm
-from .models import Notification
+from .models import Notification, Loan, Transaction, LenderWallet
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -79,10 +79,6 @@ def admin(request):
      return render(request, "admin.html", {"name": request.user.username})
 
 @login_required
-def apply_loan(request):
-     return render(request, "borrower/apply_loan.html")
-
-@login_required
 def my_loans(request):
      return render(request, "borrower/my_loans.html")
 
@@ -96,29 +92,60 @@ def wallet(request):
 
 @login_required
 def loan_requests(request):
-     return render(request, "lender/loan_requests.html")
+    loans = Loan.objects.filter(status="pending")
 
+    for loan in loans:
+        # transform risk score into risk level
+        if loan.risk_score >= 75:
+            loan.risk_level = "Low"
+        elif loan.risk_score >= 40:
+            loan.risk_level = "Medium"
+        else:
+            loan.risk_level = "High"
+    return render(request, "lender/loan_requests.html", {"loans": loans})
 
 @login_required
 def approve_loan(request, loan_id):
-     # later, add DB logic to approve
-     return redirect("loan_requests")
+    loan = Loan.objects.get(id=loan_id)
 
+    loan.status = "approved"
+    loan.lender = request.user
+    loan.save()
+
+    return redirect("loan_requests")
 
 @login_required
 def reject_loan(request, loan_id):
-     # later, add DB logic to reject
-     return redirect("loan_requests")
+    loan = Loan.objects.get(id=loan_id)
+    loan.status = "rejected"
+    loan.save()
 
+    return redirect("loan_requests")
 
 @login_required
 def fund_wallet(request):
-     return render(request, "lender/fund_wallet.html")
+    wallets, created = LenderWallet.objects.get_or_create(lender=request.user)
+
+    if request.method == "POST":
+        amount = float(request.POST.get("amount"))
+        wallets.balance += amount
+        wallets.save()
+
+        Transaction.objects.create(
+            lender=request.user,
+            amount=amount,
+            type="deposit"
+        )
+
+        return redirect("fund_wallet")
+
+    return render(request, "lender/fund_wallet.html", {"wallet": wallets})
 
 
 @login_required
 def transaction_history(request):
-     return render(request, "lender/transaction_history.html")
+    logs = Transaction.objects.filter(lender=request.user).order_by("-timestamp")
+    return render(request, "lender/transaction_history.html", {"logs": logs})
 
 def admin_panel(request):
     return render(request, "admin.html")

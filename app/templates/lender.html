@@ -18,10 +18,11 @@
     <aside class="bg-white p-4 w-full sm:w-64 sm:h-screen border-b sm:border-b-0">
       <h2 class="font-semibold mb-4 text-lg sm:text-base">Menu</h2>
       <ul class="flex sm:block gap-4 sm:space-y-2 text-gray-600 text-sm sm:text-base overflow-x-auto">
-        <li>Dashboard</li>
-        <li>Invest</li>
-        <li>Transactions</li>
-        <li>Messages</li>
+        <li><a href=""></a>Dashboard</li>
+        <li><a href="{% url 'fund_wallet' %}">Wallet</a></li>
+        <li><a href="{% url 'loan_requests' %}">Loan requests</a></li>
+        <li><a href="{% url 'approve_loan' %}">Approved loans</a></li>
+        <li><a href="{% url 'transaction_history' %}">Transactions</a></li>
         <li>Settings</li>
       </ul>
     </aside>

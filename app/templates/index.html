@@ -1,214 +1,452 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>LoanApp</title>
-</head><!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="styles/css/style.css">
-    <title>Eventix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="{% static '/images/pesabridge.png' %}">
+    <title>PesaBridge</title>
 </head>
 <body>
-<style>
-    body{
-    margin: 0;
-    height: 0;
-    font-family: "Poppins";
-}
-/*top navigation*/
-nav{
-    background-color: #d5d3d3;
-    display: flex;
-    margin: 20px 30px;
-    border-radius: 7px;
-    justify-content: center;
-    align-items: center;
-    font-weight: 500;
-    color: #434343;
-}
-.eventix{
-    height: 40px;
-    width: 100px;
-    background-color: #3232af;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 20px;
-    margin-right: 100px;
-}
-.ticket{
-    height: 30px;
-    width: 110px;
-    background-color: blue;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    margin-left: 100px;
-}
-.menu-list ul{
-    display: flex;
-    list-style: none;
-}
-li a{
-    padding: 15px;
-    text-decoration: none;
-    color: black;
-}
-select{
-    border: none;
-    margin-left: -15px;
-    background-color: transparent;
-}
-/*body section*/
-main{
-    margin: 0 30px;
-    display: flex;
-    gap: 50px;
-}
-.hero{
-    display: flex;
-}
-.section1{
-    margin-right: 200px;
-}
-.section1 h2{
-    font-size: 40px;
-    font-weight: bold;
-    color: #171717;
-}
-.section1 h3{
-    color: blue;
-    font-weight: 700;
-}
-.section1 p{
-    color: #434343;
-}
-.section1 h4{
-    font-weight: 600;
-    color: #353434;
-}
-.section1 h4 i{
-    margin-right: 10px;
-    color: blue;
-}
-.section1-buttons button{
-    font-size: 13px;
-    height: 40px;
-    width: 130px;
-    border-radius: 7px;
-}
-.section1-buttons .b1{
-    background-color: blue;
-    color: #d5d3d3;
-    font-weight: bold;
-    border: indigo;
-    margin-right: 9px;
-}
-.section1-buttons .b2{
-    color: blue;
-    font-weight: bold;
-}
-.section2{
-    display: flex;
-}
-.section2 .wrapper{
-    border-radius: 30px;
-}
-.section2 img {
-    height: 450px;
-    width: 550px;
-    margin-right: -160px;
-    margin-top: 90px;
-    /*clip-path: polygon(5% 0%, 100% 0%, 150% 80%, 0% 80%);*/
-    border-radius: 30px;
-}
-    /*clip-path: polygon(0% 15%,15% 0%, 100% 0%,85% 15%,85% 100%,100% 85%,15% 100%,0% 85%);*/
-.section2-buttons{
-    margin-top: 150px;
-}
-.section2-buttons button{
-    margin-top: 20px;
-    width: 180px;
-    height: 60px;
-    border-radius: 30px;
-    border: blue;
-    font-weight: 600;
-    color: #333333;
-}
-.section2-buttons button i{
-    color: blue;
-    padding: 10px;
-    font-size: large;
-}
+<!-- Header -->
+    <header class=" bg-gray-800 backdrop-blur-lg sticky top-0 z-50 shadow-lg shadow-black/5">
+        <nav class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-br rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                        <a href="{% static '/images/pesabridge.png' %}"></a>
+                    </div>
+                    <span class="text-2xl font-bold bg-gradient-to-r bg-blue-600 bg-clip-text text-transparent">
+                        PesaBridge
+                    </span>
+                </div>
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#hero" class="text-gray-400 hover:text-blue-600 font-medium transition-colors duration-200 relative group">
+                        Home
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#about" class="text-gray-400 hover:text-blue-600 font-medium transition-colors duration-200 relative group">
+                        About
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#contact" class="text-gray-400 hover:text-blue-600 font-medium transition-colors duration-200 relative group">
+                        Contact
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                </div>
 
-</style>
-<nav>
-    <div>
-    <button class="eventix">Eventix</button>
-    </div>
-    <div class="menu-list">
-        <ul>
-            <li class="home"><a href="#">Home</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Schedule</a></li>
-            <li><a href="">Speakers</a></li>
-            <li><a href="">Venue</a></li>
-            <li><a href="">More Pages</a>
-            <select>
-            </select>
-            </li>
-            <li><a href="">Dropdown</a>
-            <select>
-            </select>
-            </li>
-            <li><a href="">Contact</a></li>
-        </ul>
-    </div>
-    <div>
-        <button class="ticket">Buy Tickets</button>
-    </div>
-</nav>
+                <!-- CTA Button & Mobile Menu -->
+                <div class="flex items-center space-x-4">
+                    <button type="button" onclick="window.location.href='{% url 'login' %}'" class="hidden md:block bg-gradient-to-r from-blue-600 to-blue-300 text-white px-6 py-2 rounded-full font-medium hover:from-blue-700 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform">
+                        Login
+                    </button>
 
-<main>
-    <div class="row hero">
-    <div class="col-6 section1">
-    <h2>Global Tech Summit 2026</h2>
-        <h3>Shaping the Future of Innovation</h3>
-        <p>Join industry leaders, innovators, and visionaries for three days of groundbreaking discussions, networking opportunities, and transformative insights that will define the next decade of technology.</p>
-        <h4><i class="bi bi-calendar-event"></i>March 15-17, 2026</h4>
-        <h4><i class="bi bi-geo-alt"></i>San Francisco Convention Center</h4>
-        <h4><i class="bi bi-people"></i>5000+ Attendees Expected</h4>
-        <div class="section1-buttons">
-            <button class="b1">REGISTER NOW</button>
-            <button class="b2">VIEW SCHEDULE</button>
+                    <!-- Mobile menu button -->
+                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-blue-700 transition-colors duration-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <div id="mobile-menu" class="md:hidden hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg border-b border-gray-200/50 shadow-lg animate-slide-down">
+                <div class="px-4 py-4 space-y-2">
+                    <a href="#hero" class="block text-gray-700 hover:text-blue-600 font-medium py-2 transition-colors duration-200">Home</a>
+                    <a href="#about" class="block text-gray-700 hover:text-blue-600 font-medium py-2 transition-colors duration-200">About</a>
+                    <a href="#contact" class="block text-gray-700 hover:text-blue-600 font-medium py-2 transition-colors duration-200">Contact</a>
+                    <button type="button" onclick="window.location.href='{% url 'login' %}'"  class="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-3 rounded-full font-medium hover:from-blue-700 hover:to-blue-500 transition-all duration-300 shadow-lg mt-4">
+                        Login
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+<main id="hero">
+   <div class="bg-white dark:bg-gray-800 flex relative z-20 items-center overflow-hidden">
+        <div class="container mx-auto px-6 flex relative py-16">
+            <div class="sm:w-2/3 lg:w-2/5 flex flex-col relative z-20">
+                <span class="w-20 h-2 bg-gray-800 dark:bg-white mb-12">
+                </span>
+                <h1
+                    class="font-bebas-neue uppercase text-4xl sm:text-6xl font-black flex flex-col leading-none dark:text-white text-gray-800">
+                    Instant Loans.
+                    <span class="text-3xl sm:text-5xl">
+                        Real Opportunities.
+                    </span>
+                </h1>
+                <p class="text-sm sm:text-base text-gray-700 dark:text-white">
+                    Borrow, lend, and grow with confidence. PesaBridge connects trusted lenders with verified borrowers—fast, transparent, and secure.A safer, smarter way to manage money.
+                </p>
+                <div class="flex mt-8">
+                    <a href="#"
+                        class="uppercase py-2 px-4 rounded-lg bg-blue-500 border-2 border-transparent text-white text-md mr-4 hover:bg-blue-400">
+                        Apply for a Loan
+                    </a>
+                    <a href="#"
+                        class="uppercase py-2 px-4 rounded-lg bg-transparent border-2 border-blue-500 text-blue-500 dark:text-white hover:bg-blue-500 hover:text-white text-md">
+                        Become a Lender
+                    </a>
+                </div>
+            </div>
+            <div class="hidden sm:block sm:w-1/3 lg:w-3/5 relative">
+                <img src="{% static '/images/money.png' %}" class="max-w-xs md:max-w-sm m-auto" alt="money"/>
+              <div class="rounded-s-full absolute inset-0 bg-gradient-to-t from-white"></div>
+            </div>
         </div>
-        <h4>Event Starts In:</h4>
-        <h4>Timer/Countdown</h4>
-    </div>
-    <div class="col-6 section2">
-        <div class="wrapper">
-        <img src="styles/images/summit.jpg" alt="">
-        </div>
-        <div class="section2-buttons">
-            <button><i class="bi bi-award"></i>Premium Speakers</button>
-            <button><i class="bi bi-wifi"></i>Live Streaming</button>
-            <button><i class="bi bi-gift"></i>Networking Events</button>
-        </div>
-    </div>
     </div>
 </main>
+<section id="about" class="py-20 bg-gray-50 dark:bg-gray-800" x-data="{ inView: false }" x-init="setTimeout(() => inView = true, 500)">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-16 text-center">
+            <div class="{ 'opacity-100 translate-y-0': inView, 'opacity-0 translate-y-8': !inView }" class="transition-all duration-1000 ease-out">
+                <h2 class="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl dark:text-white">
+                    About Pesa Bridge
+                </h2>
+                <p class="mx-auto text-l text-gray-600 dark:text-gray-300">
+PesaBridge is a digital micro-lending platform designed to connect borrowers and lenders in a fast, transparent, and secure ecosystem.
+                    {#Built with the vision of improving financial inclusion across Africa, PesaBridge uses intelligent risk scoring, privacy-focused matching, and seamless digital transactions to make lending easier and safer for everyone.#}
+{#We empower individuals and small businesses to access the capital they need while giving everyday people the opportunity to grow their money by funding loans. Our platform removes the barriers of traditional banking and provides a fair, efficient, and modern solution for personal finance.                </p>#}
+            </div>
+        </div>
+        <div class="items-center grid gap-16 mb-20 lg:grid-cols-2">
+            <div class="space-y-8">
+                <div :class="{ 'opacity-100 translate-y-0': inView, 'opacity-0 translate-y-8': !inView }" class="transition-all duration-1000 ease-out delay-200">
+                    <h3 class="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
+                        Building Tomorrow's Solutions Today
+                    </h3>
+                    <p class="mb-6 text-lg text-gray-600 leading-relaxed dark:text-gray-300">
+⭐ Our Mission:
+
+To bridge the financial gap by providing accessible, ethical, and technology-driven lending solutions that empower both borrowers and lenders.                    </p>
+                    <p class="text-lg text-gray-600 leading-relaxed dark:text-gray-300">
+⭐ Our Vision:
+
+A financially inclusive Africa where anyone; regardless of background; can access the capital they need to grow, thrive, and create opportunities for themselves and others.                    </p>
+
+                </div>
+                <!-- This is the line that was changed -->
+                <div :class="{ 'opacity-100 translate-y-0': inView, 'opacity-0 translate-y-8': !inView }" class="transition-all duration-1000 ease-out delay-200">
+                    <div class="space-y-4">
+                        <div class="items-start space-x-4 rtl:space-x-reverse flex">
+                            <div class="flex-shrink-0 items-center justify-center flex w-[32px] h-[32px] rounded-full bg-blue-600">
+                                <svg class="w-[16px] h-[16px] text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                    Expert Team
+                                </h4>
+                                <p class="text-gray-600 dark:text-gray-300">
+                                    50+ skilled professionals with years of experience
+                                </p>
+                            </div>
+                        </div>
+                        <div class="items-start space-x-4 rtl:space-x-reverse flex">
+                            <div class="flex-shrink-0 items-center justify-center flex w-[32px] h-[32px] rounded-full bg-blue-600">
+                                <svg class="w-[16px] h-[16px] text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                    Global Reach
+                                </h4>
+                                <p class="text-gray-600 dark:text-gray-300">
+                                    Serving clients across 25+ countries worldwide
+                                </p>
+                            </div>
+                        </div>
+                        <div class="items-start space-x-4 rtl:space-x-reverse flex">
+                            <div class="flex-shrink-0 items-center justify-center flex w-[32px] h-[32px] rounded-full bg-blue-600">
+                                <svg class="w-[16px] h-[16px] text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                    Innovation Focus
+                                </h4>
+                                <p class="text-gray-600 dark:text-gray-300">
+                                    Always adopting the latest technologies and methodologies
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="relative">
+                <div :class="{ 'opacity-100 scale-100': inView, 'opacity-0 scale-95': !inView }" class="transition-all duration-1000 ease-out delay-300">
+                    <div class="relative overflow-hidden rounded-3xl shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Our team at work" class="object-cover w-full h-[384px]" />
+                        <div class="absolute bottom-6 left-6 right-6">
+                            <div class="backdrop-blur-sm p-6 rounded-xl bg-white shadow-lg dark:bg-gray-800">
+                                <div class="grid grid-cols-3 gap-4 text-center">
+                                    <div>
+                                        <div class="text-2xl font-bold text-gray-900 dark:text-white">
+                                            5+
+                                        </div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                                            Years
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-2xl font-bold text-gray-900 dark:text-white">
+                                            50+
+                                        </div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                                            Team
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-2xl font-bold text-gray-900 dark:text-white">
+                                            25+
+                                        </div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                                            Countries
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Contact Us Section -->
+    <section id="contact" class="py-20 px-4 md:px-12 lg:px-24">
+        <div class="max-w-7xl mx-auto">
+            <!-- Section Header -->
+            <div class="text-center mb-16 px-4">
+                <p class="text-base font-medium text-gray-500 mb-3">Get In Touch</p>
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-700 mb-6">Contact Us</h2>
+                <p class="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                    Have questions or ready to start lending/borrowing? We'd love to hear from you. Reach out.
+                </p>
+            </div>
+
+            <!-- Contact Content -->
+            <div class="bg-white p-10 rounded-none shadow-sm">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Contact Information -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-700 mb-8">Get in touch</h3>
+
+                        <!-- Contact Info Items -->
+                        <div class="space-y-6">
+                            <!-- Phone -->
+                            <div class="flex items-start">
+                                <div class="bg-gradient-to-r from-blue-700 to-blue-400 p-3 rounded-md mr-4">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-700 mb-1">Phone</h4>
+                                    <p class="text-lg text-gray-600">(+254) 712-123-456</p>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="flex items-start">
+                                <div class="bg-gradient-to-r from-blue-700 to-blue-400 p-3 rounded-md mr-4">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-700 mb-1">Email</h4>
+                                    <p class="text-lg text-gray-600">pesabridge@gmail.com</p>
+                                </div>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="flex items-start">
+                                <div class="bg-gradient-to-r from-blue-700 to-blue-400 p-3 rounded-md mr-4">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-700 mb-1">Office</h4>
+                                    <p class="text-lg text-gray-600">Bihi Towers, BH 100<br>Nairobi, Kenya</p>
+                                </div>
+                            </div>
+
+                            <!-- Hours -->
+                            <div class="flex items-start">
+                                <div class="bg-gradient-to-r from-blue-700 to-blue-400 p-3 rounded-md mr-4">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-700 mb-1">Business Hours</h4>
+                                    <p class="text-lg text-gray-600">Mon - Fri: 9:00 AM - 6:00 PM<br>Sat: 10:00 AM - 4:00 PM</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Form -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-700 mb-8">Send us a message</h3>
+
+                        <form class="space-y-6">
+                            <!-- Name & Email -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="name" class="block text-lg font-medium text-gray-700 mb-2">Full Name</label>
+                                    <input type="text" id="name" class="w-full px-4 py-3 border border-gray-300 rounded-none focus:outline-none focus:border-blue-500 text-lg" placeholder="Your name">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-lg font-medium text-gray-700 mb-2">Email Address</label>
+                                    <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-none focus:outline-none focus:border-blue-500 text-lg" placeholder="your@email.com">
+                                </div>
+                            </div>
+
+                            <!-- Subject -->
+                            <div>
+                                <label for="subject" class="block text-lg font-medium text-gray-700 mb-2">Subject</label>
+                                <input type="text" id="subject" class="w-full px-4 py-3 border border-gray-300 rounded-none focus:outline-none focus:border-blue-500 text-lg" placeholder="What is this regarding?">
+                            </div>
+
+                            <!-- Message -->
+                            <div>
+                                <label for="message" class="block text-lg font-medium text-gray-700 mb-2">Message</label>
+                                <textarea id="message" rows="5" class="w-full px-4 py-3 border border-gray-400 rounded-none focus:outline-none focus:border-blue-500 text-lg" placeholder="Write your message here..."></textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="w-full px-8 py-4 rounded-md  bg-blue-600  text-white text-lg font-medium hover:bg-blue-800 transition-colors">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white relative overflow-hidden">
+        <!-- Decorative background -->
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <!-- Company Info -->
+                <div class="lg:col-span-2">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center shadow-lg">
+                        <a href="{% static '/images/pesabridge.png' %}"></a>
+                        </div>
+                        <span class="text-2xl font-bold bg-gradient-to-r bg-blue-600 bg-clip-text text-transparent">
+                        PesaBridge
+                    </span>
+                    </div>
+                    <p class="text-gray-300 mb-6 max-w-md leading-relaxed">
+                        We are committed to helping people gain financial freedom, promoting honest lending, and building a community-driven financial ecosystem that enables everyone to succeed.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg group">
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg group">
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg group">
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg group">
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.219-.359-1.219c0-1.142.662-1.995 1.488-1.995.703 0 1.042.527 1.042 1.159 0 .705-.449 1.763-.681 2.739-.194.825.412 1.499 1.221 1.499 1.466 0 2.522-1.89 2.522-4.133 0-1.714-1.194-2.993-3.368-2.993-2.395 0-3.893 1.759-3.893 3.713 0 .674.199 1.15.509 1.521.144.173.165.243.112.444-.039.148-.126.497-.163.635-.052.194-.21.237-.482.144-1.332-.539-1.966-1.966-1.966-3.486 0-2.653 2.104-5.83 6.29-5.83 3.427 0 5.673 2.478 5.673 5.1 0 3.5-1.955 6.103-4.837 6.103-.977 0-1.889-.522-2.202-1.119l-.608 2.33c-.22.857-.815 1.928-1.24 2.652C9.602 23.812 10.786 24.001 12.017 24.001c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-white">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#hero" class="text-gray-300 hover:text-white transition-colors duration-200 hover:translate-x-1 transform inline-block">Home</a></li>
+                        <li><a href="#about" class="text-gray-300 hover:text-white transition-colors duration-200 hover:translate-x-1 transform inline-block">About Us</a></li>
+                        <li><a href="#about" class="text-gray-300 hover:text-white transition-colors duration-200 hover:translate-x-1 transform inline-block">Services</a></li>
+                        <li><a href="#contact" class="text-gray-300 hover:text-white transition-colors duration-200 hover:translate-x-1 transform inline-block">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-white">Support</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors duration-200 hover:translate-x-1 transform inline-block">Help Center</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors duration-200 hover:translate-x-1 transform inline-block">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors duration-200 hover:translate-x-1 transform inline-block">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors duration-200 hover:translate-x-1 transform inline-block">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
+                <p class="text-gray-400 text-sm mb-4 md:mb-0">
+                    © 2025 PesaBridge. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+ <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Smooth scroll effect for header
+        let lastScroll = 0;
+        const header = document.querySelector('header');
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+
+            if (currentScroll > 100) {
+                header.classList.add('shadow-xl');
+            } else {
+                header.classList.remove('shadow-xl');
+            }
+
+            lastScroll = currentScroll;
+        });
+
+        // Add some interactive animations
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-1px)';
+            });
+
+            link.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
 </body>
 </html>
 <body>

@@ -1,56 +1,59 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Loan Requests</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+<div class="p-6 max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Loan Requests</h1>
 
-<body class="p-4 bg-gray-100">
+    <table class="w-full bg-white shadow rounded text-left">
+        <tr class="bg-gray-100">
+            <th class="p-3">Borrower ID</th>
+            <th class="p-3">Amount</th>
+            <th class="p-3">Duration</th>
+            <th class="p-3">Risk Score</th>
+            <th class="p-3">Risk Level</th>
+            <th class="p-3">Purpose</th>
+            <th class="p-3">Actions</th>
+        </tr>
 
-<h1 class="text-xl font-bold mb-4">Incoming Loan Requests</h1>
+        {% for loan in loans %}
+        <tr class="border-b">
+            <td class="p-3 font-semibold text-blue-700">
+                {{ loan.borrower.borrower_code }}
+            </td>
 
-<div class="space-y-4">
+            <td class="p-3">KES {{ loan.amount }}</td>
 
-    <!-- SAMPLE REQUEST CARD (repeat this with a loop later) -->
-    <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="font-semibold text-lg">Borrower: John Doe</h2>
-        <p>Amount Requested: <span class="font-bold">KES 15,000</span></p>
-        <p>Purpose: Business Startup</p>
-        <p>Duration: 3 Months</p>
+            <td class="p-3">{{ loan.duration_months }} months</td>
 
-        <div class="flex gap-2 mt-4">
-            <a href="{% url 'approve_loan' 1 %}"
-               class="flex-1 bg-green-600 text-white p-2 rounded text-center">
-               Approve
-            </a>
+            <td class="p-3">{{ loan.risk_score }}/100</td>
 
-            <a href="{% url 'reject_loan' 1 %}"
-               class="flex-1 bg-red-600 text-white p-2 rounded text-center">
-               Reject
-            </a>
-        </div>
-    </div>
+            <td class="p-3">
+                {% if loan.risk_level == "Low" %}
+                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded">
+                        Low
+                    </span>
+                {% elif loan.risk_level == "Medium" %}
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded">
+                        Medium
+                    </span>
+                {% else %}
+                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded">
+                        High
+                    </span>
+                {% endif %}
+            </td>
 
-    <!-- ANOTHER SAMPLE -->
-    <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="font-semibold text-lg">Borrower: Jane Smith</h2>
-        <p>Amount Requested: <span class="font-bold">KES 8,000</span></p>
-        <p>Purpose: Rent</p>
+            <td class="p-3">{{ loan.purpose|default:"(Not provided)" }}</td>
 
-        <div class="flex gap-2 mt-4">
-            <a href="{% url 'approve_loan' 2 %}"
-               class="flex-1 bg-green-600 text-white p-2 rounded text-center">
-               Approve
-            </a>
+            <td class="p-3">
+                <a href="/lender/approve/{{ loan.id }}/"
+                   class="px-3 py-1 bg-green-600 text-white rounded mr-2">
+                    Approve
+                </a>
 
-            <a href="{% url 'reject_loan' 2 %}"
-               class="flex-1 bg-red-600 text-white p-2 rounded text-center">
-               Reject
-            </a>
-        </div>
-    </div>
-
+                <a href="/lender/reject/{{ loan.id }}/"
+                   class="px-3 py-1 bg-red-600 text-white rounded">
+                    Reject
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 </div>
-
-</body>
-</html>

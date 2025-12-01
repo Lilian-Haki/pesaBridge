@@ -18,9 +18,9 @@ urlpatterns = [
     path("borrower/wallet/", views.wallet, name="wallet"),
     path('lender/', views.lender, name='lender'),
     path("lender/loan-requests/", views.loan_requests, name="loan_requests"),
-    path("lender/approve/<int:loan_id>/", views.approve_loan, name="approve_loan"),
+    path("lender/approve/", views.approve_loan, name="approve_loan"),
     path("lender/reject/<int:loan_id>/", views.reject_loan, name="reject_loan"),
-    path("lender/fund-wallet/", views.fund_wallet, name="lender_fund_wallet"),
+    path("lender/fund-wallet/", views.fund_wallet, name="fund_wallet"),
     path("lender/transactions/", views.transaction_history, name="transaction_history"),
 
     path('admin-panel/', views.admin_panel, name='admin_panel'),

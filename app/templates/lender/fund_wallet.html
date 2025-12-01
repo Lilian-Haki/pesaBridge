@@ -1,36 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Fund Wallet</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+<div class="p-6 max-w-xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Fund Wallet</h1>
 
-<body class="bg-gray-100 p-4">
-
-<h1 class="text-xl font-bold mb-4">Fund Your Wallet</h1>
-
-<div class="bg-white p-4 rounded-lg shadow max-w-md mx-auto">
-
-    <div class="text-center mb-4">
-        <p class="text-gray-700">Current Balance</p>
-        <p class="text-3xl font-bold text-blue-600">KES 12,500</p>
+    <div class="mb-4 p-4 bg-white shadow rounded">
+        <p class="text-lg">Current Balance: <strong>KES {{ wallet.balance }}</strong></p>
     </div>
 
     <form method="POST" class="space-y-4">
         {% csrf_token %}
+        <input type="number" name="amount" placeholder="Enter Amount"
+               class="w-full p-3 border rounded" required>
 
-        <div>
-            <label class="block font-semibold">Amount</label>
-            <input type="number" name="amount" class="w-full p-2 border rounded"
-                   placeholder="Enter amount to deposit">
-        </div>
-
-        <button class="bg-blue-600 w-full text-white p-2 rounded hover:bg-blue-700">
+        <button class="px-4 py-2 bg-blue-600 text-white rounded">
             Add Funds
         </button>
     </form>
-
 </div>
-
-</body>
-</html>

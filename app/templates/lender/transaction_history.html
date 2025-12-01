@@ -1,36 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Transaction History</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+<div class="p-6 max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Transaction History</h1>
 
-<body class="bg-gray-100 p-4">
+    <table class="w-full bg-white shadow rounded">
+        <tr class="bg-gray-100">
+            <th class="p-3">Type</th>
+            <th class="p-3">Amount</th>
+            <th class="p-3">Timestamp</th>
+        </tr>
 
-<h1 class="text-xl font-bold mb-4">Transaction History</h1>
-
-<div class="space-y-4">
-
-    <!-- SAMPLE TRANSACTION -->
-    <div class="bg-white p-4 shadow rounded">
-        <p class="font-semibold">Deposit</p>
-        <p class="text-gray-700">Amount: KES 5,000</p>
-        <p class="text-gray-500 text-sm">Date: 2025-01-12</p>
-    </div>
-
-    <div class="bg-white p-4 shadow rounded">
-        <p class="font-semibold">Loan Funded</p>
-        <p class="text-gray-700">Amount: KES 8,000</p>
-        <p class="text-gray-500 text-sm">Date: 2025-01-10</p>
-    </div>
-
-    <div class="bg-white p-4 shadow rounded">
-        <p class="font-semibold">Deposit</p>
-        <p class="text-gray-700">Amount: KES 10,000</p>
-        <p class="text-gray-500 text-sm">Date: 2025-01-05</p>
-    </div>
-
+        {% for log in logs %}
+        <tr>
+            <td class="p-3">{{ log.type }}</td>
+            <td class="p-3">{{ log.amount }}</td>
+            <td class="p-3">{{ log.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 </div>
-
-</body>
-</html>
