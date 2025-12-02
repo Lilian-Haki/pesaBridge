@@ -1,59 +1,124 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Lender Dashboard - LoanApp</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
+{% extends "base2.html" %}
+{% block content %}
+<div>
+<main class="flex-1 p-4 sm:p-6">
+    <h1 class="text-xl font-semibold">Welcome, {{ name }} 👋</h1>
 
-  <header class="bg-green-500 text-white p-4 flex justify-between items-center">
-    <h1 class="text-xl sm:text-2xl font-bold">Lender Dashboard</h1>
-    <span class="text-sm">LoanApp</span>
-  </header>
-
-  <div class="flex flex-col sm:flex-row">
-
-    <!-- SIDEBAR -->
-    <aside class="bg-white p-4 w-full sm:w-64 sm:h-screen border-b sm:border-b-0">
-      <h2 class="font-semibold mb-4 text-lg sm:text-base">Menu</h2>
-      <ul class="flex sm:block gap-4 sm:space-y-2 text-gray-600 text-sm sm:text-base overflow-x-auto">
-        <li><a href=""></a>Dashboard</li>
-        <li><a href="{% url 'fund_wallet' %}">Wallet</a></li>
-        <li><a href="{% url 'loan_requests' %}">Loan requests</a></li>
-        <li><a href="{% url 'approve_loan' %}">Approved loans</a></li>
-        <li><a href="{% url 'transaction_history' %}">Transactions</a></li>
-        <li>Settings</li>
-      </ul>
-    </aside>
-
-    <main class="flex-1 p-4 sm:p-6">
-        <h1 class="text-xl font-semibold">Welcome, {{ name }} 👋</h1>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-
-        <div class="bg-white p-4 rounded shadow">
-          <h3 class="font-semibold text-lg">Available Funds</h3>
-          <p class="text-sm text-gray-600">KES 150,000 available to lend</p>
+    <main class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-white">Lender Dashboard</h1>
+            <p class="text-gray-600 dark:text-gray-400">Track your lending activity and earnings</p>
         </div>
 
-        <div class="bg-white p-4 rounded shadow">
-          <h3 class="font-semibold text-lg">Investments</h3>
-          <p class="text-sm text-gray-600">
-            3 active investments • Avg return: 8.2%
-          </p>
+        <!-- Stats Cards -->
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div class="flex items-center justify-between pb-2">
+                    <p class="text-sm font-medium text-gray-600">Total Invested</p>
+                    <span>💵</span>
+                </div>
+                <p class="text-2xl font-bold">$45,231.89</p>
+                <p class="text-xs text-gray-500 mt-1">+20.1% from last month</p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div class="flex items-center justify-between pb-2">
+                    <p class="text-sm font-medium text-gray-600">Total Earnings</p>
+                    <span>📈</span>
+                </div>
+                <p class="text-2xl font-bold">$12,234.56</p>
+                <p class="text-xs text-gray-500 mt-1">+15.3% from last month</p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div class="flex items-center justify-between pb-2">
+                    <p class="text-sm font-medium text-gray-600">Active Loans</p>
+                    <span>👥</span>
+                </div>
+                <p class="text-2xl font-bold">23</p>
+                <p class="text-xs text-gray-500 mt-1">3 pending approval</p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div class="flex items-center justify-between pb-2">
+                    <p class="text-sm font-medium text-gray-600">Pending Requests</p>
+                    <span>⏳</span>
+                </div>
+                <p class="text-2xl font-bold">8</p>
+                <p class="text-xs text-gray-500 mt-1">Review and fund loans</p>
+            </div>
         </div>
 
-        <div class="bg-white p-4 rounded shadow sm:col-span-2">
-          <h3 class="font-semibold text-lg">Find Borrowers</h3>
-          <p class="text-sm text-gray-600">
-            Browse loan requests and invest
-          </p>
-        </div>
+        <!-- Two Column Layout -->
+        <div class="grid gap-6 lg:grid-cols-2">
 
-      </div>
+            <!-- Recent Activity -->
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <h2 class="text-lg font-semibold">Recent Activity</h2>
+                <p class="text-gray-500 mb-4">Your latest lending transactions</p>
+
+                <div class="space-y-4">
+
+                    {% for a in activities %}
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-gray-100 dark:bg-gray-700">
+                        <div>
+                            <p class="font-medium">{{ a.name }}</p>
+                            <p class="text-sm text-gray-500">{{ a.date }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold">{{ a.amount }}</p>
+                            <p class="text-xs text-blue-600">{{ a.status }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+
+            <!-- Portfolio Overview -->
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <h2 class="text-lg font-semibold">Portfolio Overview</h2>
+                <p class="text-gray-500 mb-4">Your investment distribution</p>
+
+                <div class="space-y-4">
+
+                    <!-- Example category -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium">Personal Loans</span>
+                            <span class="text-sm text-gray-500">45%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: 45%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium">Business Loans</span>
+                            <span class="text-sm text-gray-500">30%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: 30%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium">Education Loans</span>
+                            <span class="text-sm text-gray-500">25%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: 25%;"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
     </main>
-
-  </div>
-</body>
-</html>
+</main>
+</div>
+{% endblock %}

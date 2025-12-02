@@ -1,40 +1,185 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Repay Loan</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="p-4 bg-gray-100">
+{% extends "base1.html" %}
+{% block content %}
 
-<h1 class="text-xl font-bold mb-4">Repay Loan</h1>
+<h1 class="text-3xl font-bold mb-4">Repay Loan</h1>
 
-<div class="bg-white p-4 rounded-lg shadow max-w-md mx-auto">
+<div class="max-w-5xl mx-auto">
 
-    <form method="POST" class="space-y-4">
-        {% csrf_token %}
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold mb-1">Pay Loan</h2>
+        <p class="text-gray-500">Make a payment towards your active loans</p>
+    </div>
 
-        <div>
-            <label class="block font-semibold">Select Loan</label>
-            <select name="loan_id" class="w-full border p-2 rounded">
-                <option>Select a loan</option>
-                <option value="1">Loan #1 - KES 20,000</option>
-                <option value="2">Loan #2 - KES 10,000</option>
-            </select>
+    <div class="grid md:grid-cols-2 gap-6">
+
+        <!-- LEFT SIDE: Payment Details -->
+        <div class="bg-white shadow rounded-xl p-6">
+
+            <h3 class="text-xl font-semibold">Payment Details</h3>
+            <p class="text-gray-500 mb-4 text-sm">Select loan and enter payment amount</p>
+
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Select Loan -->
+                <div class="space-y-2">
+                    <label for="loan" class="text-sm font-medium">Select Loan</label>
+                    <select name="loan" id="loan" required
+                        class="w-full border rounded-lg px-4 py-2 bg-white focus:ring focus:ring-blue-300">
+
+                        <option value="" disabled selected>Choose a loan</option>
+
+                        {% for loan in active_loans %}
+                        <option value="{{ loan.id }}">
+                            {{ loan.name }} - ${{ loan.balance|floatformat:0 }} remaining
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Show selected loan summary -->
+                {% if selected_loan_data %}
+                <div class="p-4 bg-gray-100 rounded-lg space-y-2">
+
+                    <div class="flex justify-between">
+                        <span class="text-sm text-gray-600">Outstanding Balance</span>
+                        <span class="font-semibold">
+                            ${{ selected_loan_data.balance|floatformat:0 }}
+                        </span>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <span class="text-sm text-gray-600">Monthly Payment</span>
+                        <span class="font-semibold">
+                            ${{ selected_loan_data.monthly_payment|floatformat:0 }}
+                        </span>
+                    </div>
+
+                </div>
+                {% endif %}
+
+                <!-- Payment Amount -->
+                <div class="space-y-2">
+                    <label for="amount" class="text-sm font-medium">Payment Amount ($)</label>
+                    <input type="number" name="amount" id="amount" placeholder="Enter amount" required
+                        class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"/>
+
+                    {% if selected_loan_data %}
+                    <div class="flex gap-2 mt-2">
+                        <button type="button"
+                            onclick="document.getElementById('amount').value='{{ selected_loan_data.monthly_payment }}'"
+                            class="border px-3 py-1 rounded-lg text-sm hover:bg-gray-100">
+                            Monthly Payment
+                        </button>
+
+                        <button type="button"
+                            onclick="document.getElementById('amount').value='{{ selected_loan_data.balance }}'"
+                            class="border px-3 py-1 rounded-lg text-sm hover:bg-gray-100">
+                            Full Balance
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Payment Method -->
+                <div class="space-y-3">
+                    <p class="text-sm font-medium">Payment Method</p>
+
+                    <div class="space-y-3">
+
+                        <!-- Card -->
+                        <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-100">
+                            <input type="radio" name="payment_method" value="card" required />
+                            <span>Credit/Debit Card</span>
+                        </label>
+
+                        <!-- Bank -->
+                        <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-100">
+                            <input type="radio" name="payment_method" value="bank" />
+                            <span>Bank Transfer</span>
+                        </label>
+
+                        <!-- Wallet -->
+                        <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-100">
+                            <input type="radio" name="payment_method" value="wallet" />
+                            <span>Digital Wallet</span>
+                        </label>
+
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">
+                    Make Payment
+                </button>
+            </form>
         </div>
 
-        <div>
-            <label class="block font-semibold">Amount to Pay</label>
-            <input type="number" name="pay_amount" class="w-full border p-2 rounded"
-                   placeholder="Enter amount">
+        <!-- RIGHT SIDE: Payment Summary -->
+        <div class="space-y-6">
+
+            <!-- Summary -->
+            <div class="bg-white shadow rounded-xl p-6">
+                <h3 class="text-xl font-semibold mb-1">Payment Summary</h3>
+                <p class="text-gray-500 mb-4 text-sm">Review your payment details</p>
+
+                <!-- Loan -->
+                <div class="flex justify-between py-3 border-b">
+                    <span class="text-gray-500">Loan</span>
+                    <span class="font-medium">
+                        {% if selected_loan_data %} {{ selected_loan_data.name }} {% else %}-{% endif %}
+                    </span>
+                </div>
+
+                <!-- Payment Amount -->
+                <div class="flex justify-between py-3 border-b">
+                    <span class="text-gray-500">Payment Amount</span>
+                    <span class="font-medium">
+                        {% if payment_amount %} ${{ payment_amount }} {% else %}-{% endif %}
+                    </span>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="flex justify-between py-3 border-b">
+                    <span class="text-gray-500">Payment Method</span>
+                    <span class="font-medium capitalize">
+                        {% if payment_method %}
+                            {% if payment_method == "card" %}Credit/Debit Card{% endif %}
+                            {% if payment_method == "bank" %}Bank Transfer{% endif %}
+                            {% if payment_method == "wallet" %}Digital Wallet{% endif %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Remaining -->
+                {% if selected_loan_data and payment_amount %}
+                <div class="flex justify-between pt-4">
+                    <span class="font-semibold">Remaining After Payment</span>
+                    <span class="font-bold text-blue-600">
+                        ${{ selected_loan_data.balance|floatformat:0|add:"-|payment_amount" }}
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Payment Tips -->
+            <div class="bg-white shadow rounded-xl p-6">
+                <h3 class="text-xl font-semibold mb-2">Payment Tips</h3>
+
+                <ul class="text-gray-600 text-sm space-y-1">
+                    <li>• Payments are processed instantly</li>
+                    <li>• Paying more reduces interest</li>
+                    <li>• Early repayment has no penalties</li>
+                    <li>• Keep your receipts for your records</li>
+                </ul>
+            </div>
+
         </div>
-
-        <button class="bg-green-600 w-full text-white p-2 rounded hover:bg-green-700">
-            Repay Now
-        </button>
-
-    </form>
-
+    </div>
 </div>
 
-</body>
-</html>
+{% endblock %}

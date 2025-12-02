@@ -1,0 +1,126 @@
+{% extends "base2.html" %}
+{% block content %}
+<main class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-foreground mb-2">My Wallet</h1>
+        <p class="text-muted-foreground">Manage your lending funds</p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-3 mb-8">
+        <!-- Available Balance -->
+        <div class="border rounded-xl shadow-sm bg-white dark:bg-gray-900 lg:col-span-2">
+            <div class="p-4 border-b">
+                <h2 class="flex items-center gap-2 text-xl font-semibold">
+                    <span class="h-5 w-5 text-primary">&#128179;</span> <!-- Wallet icon -->
+                    Available Balance
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="text-4xl font-bold text-foreground mb-6">$28,543.75</div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <!-- Deposits -->
+                    <div class="p-4 rounded-lg bg-muted/50">
+                        <div class="flex items-center gap-2 text-muted-foreground mb-1">
+                            <span>&#11015;</span>
+                            <span class="text-sm">Total Deposits</span>
+                        </div>
+                        <p class="text-2xl font-semibold text-foreground">$50,000.00</p>
+                    </div>
+
+                    <!-- Withdrawn -->
+                    <div class="p-4 rounded-lg bg-muted/50">
+                        <div class="flex items-center gap-2 text-muted-foreground mb-1">
+                            <span>&#11014;</span>
+                            <span class="text-sm">Total Withdrawn</span>
+                        </div>
+                        <p class="text-2xl font-semibold text-foreground">$21,456.25</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="border rounded-xl shadow-sm bg-white dark:bg-gray-900">
+            <div class="p-4 border-b">
+                <h2 class="text-lg font-semibold">Quick Actions</h2>
+            </div>
+            <div class="p-4 space-y-3">
+                <button class="w-full py-3 rounded-lg bg-primary text-white font-medium flex items-center justify-center gap-2">
+                    &#11015; Deposit Funds
+                </button>
+                <button class="w-full py-3 rounded-lg border font-medium flex items-center justify-center gap-2">
+                    &#11014; Withdraw Funds
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Funds & Transaction History -->
+    <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Add Funds -->
+        <div class="border rounded-xl shadow-sm bg-white dark:bg-gray-900">
+            <div class="p-4 border-b">
+                <h2 class="text-xl font-semibold">Add Funds</h2>
+                <p class="text-sm text-muted-foreground">Deposit money to start lending</p>
+            </div>
+            <div class="p-6">
+                <form class="space-y-4">
+                    <div>
+                        <label for="amount" class="text-sm font-medium">Amount</label>
+                        <input id="amount" type="number" placeholder="Enter amount"
+                               class="flex h-10 w-full rounded-md border px-3 py-2 text-sm mt-1.5" />
+                    </div>
+
+                    <div>
+                        <label for="payment-method" class="text-sm font-medium">Payment Method</label>
+                        <select id="payment-method"
+                                class="flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm mt-1.5">
+                            <option>Bank Transfer</option>
+                            <option>Credit Card</option>
+                            <option>Debit Card</option>
+                        </select>
+                    </div>
+
+                    <button class="w-full py-3 rounded-lg bg-primary text-white font-medium flex items-center justify-center gap-2">
+                        &#128179; Add Funds
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="border rounded-xl shadow-sm bg-white dark:bg-gray-900">
+            <div class="p-4 border-b">
+                <h2 class="text-xl font-semibold">Transaction History</h2>
+                <p class="text-sm text-muted-foreground">Recent wallet activity</p>
+            </div>
+            <div class="p-6">
+
+                <!-- Transaction Item -->
+                <div class="space-y-3">
+                    <!-- Since Django cannot loop JSX, convert manually or use Django loops -->
+
+                    {% for t in transactions %}
+                    <div class="flex items-center justify-between p-3 rounded-lg border">
+                        <div>
+                            <p class="font-medium text-foreground">{{ t.type }}</p>
+                            <p class="text-sm text-muted-foreground">{{ t.date }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold {% if t.amount|slice:":1" == "+" %}text-primary{% endif %}">
+                                {{ t.amount }}
+                            </p>
+                            <p class="text-xs text-muted-foreground">{{ t.status }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+{% endblock %}

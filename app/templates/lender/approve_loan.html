@@ -1,18 +1,114 @@
-<div class="max-w-lg mx-auto p-6">
-    <h1 class="text-xl font-bold mb-4">Approve Loan</h1>
+{% extends "base2.html" %}
+{% block content %}
+   {% load static %}
 
-    <p class="mb-4">You are approving a loan for borrower:</p>
-
-    <div class="p-4 bg-gray-100 rounded mb-4">
-        <p><strong>Borrower ID:</strong> {{ loan.borrower.borrower_code }}</p>
-        <p><strong>Amount:</strong> KES {{ loan.amount }}</p>
-        <p><strong>Duration:</strong> {{ loan.duration_months }} months</p>
-        <p><strong>Risk Score:</strong> {{ loan.risk_score }} / 100</p>
-        <p><strong>Risk Level:</strong> {{ loan.risk_level }}</p>
+<main class="container mx-auto px-4 py-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-foreground mb-2">Approved Loans</h1>
+        <p class="text-muted-foreground">Manage your funded loans and track repayments</p>
     </div>
 
-    <form method="POST">
-        {% csrf_token %}
-        <button class="px-4 py-2 bg-green-600 text-white rounded">Confirm</button>
-    </form>
-</div>
+    <!-- Summary Cards -->
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+        <div class="card">
+            <div class="card-header pb-3">
+                <h3 class="text-sm font-medium text-muted-foreground">Total Funded</h3>
+            </div>
+            <div class="card-content">
+                <div class="text-2xl font-bold text-foreground">${{ total_funded }}</div>
+                <p class="text-xs text-muted-foreground mt-1">Across {{ total_loans }} loans</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header pb-3">
+                <h3 class="text-sm font-medium text-muted-foreground">Outstanding Balance</h3>
+            </div>
+            <div class="card-content">
+                <div class="text-2xl font-bold text-foreground">${{ outstanding_balance }}</div>
+                <p class="text-xs text-muted-foreground mt-1">Expected returns</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header pb-3">
+                <h3 class="text-sm font-medium text-muted-foreground">Expected Interest</h3>
+            </div>
+            <div class="card-content">
+                <div class="text-2xl font-bold text-primary">${{ expected_interest }}</div>
+                <p class="text-xs text-muted-foreground mt-1">Total earnings</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loan List -->
+    <div class="space-y-4">
+        {% for loan in loans %}
+        <div class="card">
+            <div class="card-header">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                            <!-- Replace with user icon image if needed -->
+                            <span class="text-primary">&#128100;</span>
+                        </div>
+                        <div>
+                            <h4 class="text-xl">{{ loan.borrower }}</h4>
+                            <p class="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                                <!-- Replace with calendar icon if needed -->
+                                &#128197; Funded on {{ loan.funded_date }}
+                            </p>
+                        </div>
+                    </div>
+                    <span class="badge {% if loan.status == 'Active' %}badge-default{% else %}badge-secondary{% endif %} flex items-center gap-1">
+                        {% if loan.status == "Completed" %}
+                            &#9989;
+                        {% endif %}
+                        {{ loan.status }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="card-content">
+                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-6 mb-6">
+                    <div class="p-3 rounded-lg bg-muted/50">
+                        <div class="flex items-center gap-2 text-muted-foreground mb-1 text-sm">&#36; Amount</div>
+                        <p class="text-lg font-semibold text-foreground">${{ loan.amount }}</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-muted/50">
+                        <div class="flex items-center gap-2 text-muted-foreground mb-1 text-sm">Interest</div>
+                        <p class="text-lg font-semibold text-foreground">${{ loan.interest }}</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-muted/50">
+                        <div class="text-muted-foreground mb-1 text-sm">Term</div>
+                        <p class="text-lg font-semibold text-foreground">{{ loan.term }}</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-muted/50">
+                        <div class="text-muted-foreground mb-1 text-sm">Monthly Payment</div>
+                        <p class="text-lg font-semibold text-foreground">${{ loan.monthly_payment }}</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-muted/50">
+                        <div class="text-muted-foreground mb-1 text-sm">Balance</div>
+                        <p class="text-lg font-semibold text-foreground">${{ loan.remaining_balance }}</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-muted/50">
+                        <div class="text-muted-foreground mb-1 text-sm">Next Payment</div>
+                        <p class="text-sm font-medium text-foreground">{{ loan.next_payment }}</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <a href="{% url 'loan_details' loan.id %}" class="btn btn-outline flex-1">View Details</a>
+                    <a href="{% url 'payment_history' loan.id %}" class="btn btn-outline flex-1">Payment History</a>
+                    {% if loan.status == "Active" %}
+                        <a href="{% url 'send_reminder' loan.id %}" class="btn btn-outline">Send Reminder</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+
+{% endblock %}

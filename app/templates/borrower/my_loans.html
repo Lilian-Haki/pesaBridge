@@ -1,30 +1,144 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Loans</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="p-4 bg-gray-100">
+{% extends "base1.html" %}
+{% block content %}
 
-<h1 class="text-xl font-bold mb-4">My Loans</h1>
+<h1 class="text-3xl font-bold mb-2">My Loans</h1>
+<p class="text-gray-500 mb-6">View and manage all your loan applications</p>
 
-<div class="space-y-4">
+<!-- Summary Cards -->
+<div class="grid gap-6 mb-8 md:grid-cols-3">
 
-    <!-- Example Loan Card (loop through loans later) -->
-    <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="font-semibold text-lg">Loan #1</h2>
-        <p class="text-gray-700">Amount: KES 20,000</p>
-        <p class="text-gray-700">Status: <span class="text-blue-600">Active</span></p>
-        <p class="text-gray-700">Due Date: 2025-02-10</p>
+    <!-- Total Borrowed -->
+    <div class="bg-white shadow rounded-xl p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Borrowed</p>
+                <p class="text-2xl font-bold">${{ total_borrowed }}</p>
+            </div>
+            <!-- Replace with icon later -->
+            <div class="h-8 w-8 bg-blue-100 rounded-full"></div>
+        </div>
     </div>
 
-    <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="font-semibold text-lg">Loan #2</h2>
-        <p class="text-gray-700">Amount: KES 10,000</p>
-        <p class="text-gray-700">Status: <span class="text-green-600">Paid</span></p>
+    <!-- Active Loans -->
+    <div class="bg-white shadow rounded-xl p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Active Loans</p>
+                <p class="text-2xl font-bold">{{ active_loans }}</p>
+            </div>
+            <div class="h-8 w-8 bg-green-100 rounded-full"></div>
+        </div>
+    </div>
+
+    <!-- Total Outstanding -->
+    <div class="bg-white shadow rounded-xl p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Outstanding</p>
+                <p class="text-2xl font-bold">${{ total_outstanding }}</p>
+            </div>
+            <div class="h-8 w-8 bg-yellow-100 rounded-full"></div>
+        </div>
     </div>
 
 </div>
 
-</body>
-</html>
+
+
+
+<!-- Loans List -->
+<div class="space-y-6">
+
+{#    {% for loan in loans %}#}
+{#    {% with progress=loan.paid_amount|div:loan.amount|mul:100 %}#}
+
+    <div class="bg-white shadow rounded-xl overflow-hidden">
+
+        <!-- Header -->
+        <div class="p-6 flex items-start justify-between">
+            <div>
+                <h2 class="text-xl font-semibold flex items-center gap-2">
+                    {{ loan.purpose }} Loan
+
+                    <!-- Status Badge -->
+                    <span class="
+                        px-2 py-1 rounded text-xs font-semibold
+                        {% if loan.status == 'approved' %}bg-green-100 text-green-600
+                        {% elif loan.status == 'pending' %}bg-yellow-100 text-yellow-600
+                        {% elif loan.status == 'rejected' %}bg-red-100 text-red-600
+                        {% endif %}
+                    ">
+                        {{ loan.status|title }}
+                    </span>
+                </h2>
+
+                <p class="text-sm text-gray-500">
+                    Loan ID: #{{ loan.id|stringformat:"06d" }}
+                </p>
+            </div>
+
+            <div class="text-right">
+                <p class="text-2xl font-bold">${{ loan.amount|floatformat:2 }}</p>
+                <p class="text-sm text-gray-500">Total Amount</p>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="px-6 pb-6 space-y-6">
+
+            <!-- Progress -->
+            <div>
+                <div class="flex justify-between text-sm mb-2">
+                    <span class="text-gray-500">Loan Progress</span>
+                    <span class="font-medium">
+                        ${{ loan.paid_amount }} / ${{ loan.amount }}
+                    </span>
+                </div>
+
+                <div class="w-full bg-gray-200 h-2 rounded-full">
+                    <div class="bg-blue-500 h-2 rounded-full" style="width: {{ progress }}%;"></div>
+                </div>
+            </div>
+
+            <!-- Grid Details -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t">
+
+                <div>
+                    <p class="text-xs text-gray-500">Start Date</p>
+                    <p class="text-sm font-medium">{{ loan.start_date }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs text-gray-500">Duration</p>
+                    <p class="text-sm font-medium">{{ loan.duration }} months</p>
+                </div>
+
+                <div>
+                    <p class="text-xs text-gray-500">Interest Rate</p>
+                    <p class="text-sm font-medium">{{ loan.interest_rate }}%</p>
+                </div>
+
+                <div>
+                    <p class="text-xs text-gray-500">Monthly Payment</p>
+                    <p class="text-sm font-medium">${{ loan.monthly_payment }}</p>
+                </div>
+
+            </div>
+
+            {% if loan.remaining_amount > 0 %}
+            <div class="pt-4 border-t">
+                <p class="text-sm text-gray-500">Remaining Balance</p>
+                <p class="text-xl font-bold">${{ loan.remaining_amount|floatformat:2 }}</p>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+{#    {% endwith %}#}
+{#    {% endfor %}#}
+
+</div>
+
+{% endblock %}

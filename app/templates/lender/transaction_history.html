@@ -1,19 +1,101 @@
-<div class="p-6 max-w-4xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4">Transaction History</h1>
+{% extends "base2.html" %}
+{% block content %}
+{% load static %}
 
-    <table class="w-full bg-white shadow rounded">
-        <tr class="bg-gray-100">
-            <th class="p-3">Type</th>
-            <th class="p-3">Amount</th>
-            <th class="p-3">Timestamp</th>
-        </tr>
+<main class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-foreground mb-2">Transactions</h1>
+                <p class="text-muted-foreground">Complete history of all your lending activities</p>
+            </div>
+            <a href="{% url 'export_csv' %}" class="btn btn-outline flex items-center gap-2">
+                <!-- Replace with icon image if needed -->
+                &#128229; Export CSV
+            </a>
+        </div>
+    </div>
 
-        {% for log in logs %}
-        <tr>
-            <td class="p-3">{{ log.type }}</td>
-            <td class="p-3">{{ log.amount }}</td>
-            <td class="p-3">{{ log.timestamp }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
+    <!-- Summary Cards -->
+    <div class="grid gap-6 md:grid-cols-3 mb-8">
+        <div class="card">
+            <div class="card-header pb-3">
+                <h3 class="text-sm font-medium text-muted-foreground">Total Transactions</h3>
+            </div>
+            <div class="card-content">
+                <div class="text-2xl font-bold text-foreground">{{ total_transactions }}</div>
+                <p class="text-xs text-muted-foreground mt-1">This month: {{ transactions_this_month }}</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header pb-3">
+                <h3 class="text-sm font-medium text-muted-foreground">Total Inflow</h3>
+            </div>
+            <div class="card-content">
+                <div class="text-2xl font-bold text-primary">${{ total_inflow }}</div>
+                <p class="text-xs text-muted-foreground mt-1">Repayments + Interest</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header pb-3">
+                <h3 class="text-sm font-medium text-muted-foreground">Total Outflow</h3>
+            </div>
+            <div class="card-content">
+                <div class="text-2xl font-bold text-foreground">${{ total_outflow }}</div>
+                <p class="text-xs text-muted-foreground mt-1">Loans + Withdrawals</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction History -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="text-lg font-bold">Transaction History</h3>
+            <p class="text-sm text-muted-foreground">All your lending transactions in chronological order</p>
+        </div>
+        <div class="card-content">
+            <div class="space-y-3">
+                {% for transaction in transactions %}
+                <div class="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+                    <div class="flex items-center gap-4 flex-1">
+                        <div class="h-10 w-10 rounded-full flex items-center justify-center {% if transaction.positive %}bg-primary/10{% else %}bg-muted{% endif %}">
+                            <!-- Replace with icon if needed -->
+                            <span class="{% if transaction.positive %}text-primary{% else %}text-muted-foreground{% endif %}">&#128176;</span>
+                        </div>
+
+                        <div class="flex-1">
+                            <p class="font-medium text-foreground">{{ transaction.type }}</p>
+                            <div class="flex items-center gap-3 mt-1">
+                                <p class="text-sm text-muted-foreground">{{ transaction.borrower }}</p>
+                                <span class="badge badge-secondary text-xs">{{ transaction.status }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-6">
+                        <div class="text-right">
+                            <p class="font-semibold {% if transaction.positive %}text-primary{% else %}text-foreground{% endif %}">
+                                {% if transaction.positive %}+{% else %}-{% endif %}${{ transaction.amount }}
+                            </p>
+                            <p class="text-xs text-muted-foreground mt-1">Balance: ${{ transaction.balance }}</p>
+                        </div>
+
+                        <div class="text-right min-w-[120px]">
+                            <div class="flex items-center gap-1 text-muted-foreground justify-end text-sm">
+                                <!-- Replace with calendar icon if needed -->
+                                &#128197; {{ transaction.date }}
+                            </div>
+                            <p class="text-xs text-muted-foreground mt-1">{{ transaction.time }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}
