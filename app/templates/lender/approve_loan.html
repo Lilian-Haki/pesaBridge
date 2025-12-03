@@ -26,7 +26,7 @@
                 <h3 class="text-sm font-medium text-muted-foreground">Outstanding Balance</h3>
             </div>
             <div class="card-content">
-                <div class="text-2xl font-bold text-foreground">${{ outstanding_balance }}</div>
+                <div class="text-2xl font-bold text-red-600">${{ amount }}</div>
                 <p class="text-xs text-muted-foreground mt-1">Expected returns</p>
             </div>
         </div>
@@ -54,18 +54,18 @@
                             <span class="text-primary">&#128100;</span>
                         </div>
                         <div>
-                            <h4 class="text-xl">{{ loan.borrower }}</h4>
+                            <h4 class="text-xl">{{ loan.use.get_full_name }}</h4>
                             <p class="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                                 <!-- Replace with calendar icon if needed -->
-                                &#128197; Funded on {{ loan.funded_date }}
+                                &#128197; Funded on {{ loan.start_date }}
                             </p>
                         </div>
                     </div>
-                    <span class="badge {% if loan.status == 'Active' %}badge-default{% else %}badge-secondary{% endif %} flex items-center gap-1">
-                        {% if loan.status == "Completed" %}
+                    <span class="badge {% if not loan.closed %}badge-default{% else %}badge-secondary{% endif %} flex items-center gap-1">
+                        {% if loan.closed %}
                             &#9989;
                         {% endif %}
-                        {{ loan.status }}
+                        {{ loan.status|title }}
                     </span>
                 </div>
             </div>
@@ -74,23 +74,23 @@
                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-6 mb-6">
                     <div class="p-3 rounded-lg bg-muted/50">
                         <div class="flex items-center gap-2 text-muted-foreground mb-1 text-sm">&#36; Amount</div>
-                        <p class="text-lg font-semibold text-foreground">${{ loan.amount }}</p>
+                        <p class="text-lg font-semibold text-lime-700">${{ loan.amount|floatformat:2 }}</p>
                     </div>
                     <div class="p-3 rounded-lg bg-muted/50">
                         <div class="flex items-center gap-2 text-muted-foreground mb-1 text-sm">Interest</div>
-                        <p class="text-lg font-semibold text-foreground">${{ loan.interest }}</p>
+                        <p class="text-lg font-semibold text-foreground">${{ loan.interest_rate }}</p>
                     </div>
                     <div class="p-3 rounded-lg bg-muted/50">
                         <div class="text-muted-foreground mb-1 text-sm">Term</div>
-                        <p class="text-lg font-semibold text-foreground">{{ loan.term }}</p>
+                        <p class="text-lg font-semibold text-foreground">{{ loan.duration }}</p>
                     </div>
                     <div class="p-3 rounded-lg bg-muted/50">
                         <div class="text-muted-foreground mb-1 text-sm">Monthly Payment</div>
-                        <p class="text-lg font-semibold text-foreground">${{ loan.monthly_payment }}</p>
+                        <p class="text-lg font-semibold text-foreground">${{ loan.monthly_payment|floatformat:2 }}</p>
                     </div>
                     <div class="p-3 rounded-lg bg-muted/50">
                         <div class="text-muted-foreground mb-1 text-sm">Balance</div>
-                        <p class="text-lg font-semibold text-foreground">${{ loan.remaining_balance }}</p>
+                        <p class="text-lg font-semibold text-foreground">${{ loan.remaining_balance|floatformat:2 }}</p>
                     </div>
                     <div class="p-3 rounded-lg bg-muted/50">
                         <div class="text-muted-foreground mb-1 text-sm">Next Payment</div>

@@ -76,15 +76,29 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pesabridge_db',
-        'USER': 'django_user',
-        'PASSWORD': 'strongpassword',
+        'NAME': 'bridge_db',
+        'USER': 'root',
+        'PASSWORD': 'lilian@254',
         'HOST': '127.0.0.1',
         'PORT': '3306',
         # 'OPTIONS': {
         #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         # }
     }
+}
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
 }
 
 
