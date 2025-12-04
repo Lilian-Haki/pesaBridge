@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.db.models import Sum, DecimalField, F
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import authenticate,login,get_user_model
-from .models import Notification, LenderWallet, Transaction, Loan, LoanApplication
+from .models import Notification, LenderWallet, Transaction, Loan, LoanApplication, LoanPayment
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse
 import csv
@@ -119,8 +119,11 @@ def my_loans(request):
     loans = Loan.objects.filter(user=request.user).order_by('-created_at')
 
     total_borrowed = sum([l.amount for l in loans])
-    active_loans_count = loans.filter(status='approved', closed=False).count()
-    total_outstanding = sum([ (l.amount - l.paid_amount) for l in loans if l.status == 'approved'])
+    active_loans_count = loans.filter(status='Active', closed=False).count()
+    total_outstanding = sum([
+        (l.amount + (l.amount * l.interest_rate / 100) - l.paid_amount)
+        for l in loans if l.status == 'Active'
+    ])
 
     # Attach calculated progress field from the model
     loans_with_progress = []
@@ -146,6 +149,82 @@ def my_loans(request):
 
     return render(request, 'borrower/my_loans.html', context)
 
+
+@login_required
+def repay_loan(request):
+
+    borrower = request.user
+
+    # Loans still active
+    active_loans = Loan.objects.filter(user=borrower, closed=False)
+
+    selected_loan_data = None
+    payment_amount = None
+    payment_method = None
+
+    if request.method == "POST":
+        loan_id = request.POST.get("loan")
+        amount = request.POST.get("amount")
+        payment_method = request.POST.get("payment_method")
+
+        if not loan_id or not amount:
+            messages.error(request, "Please select a loan and enter amount.")
+            return redirect("repay_loan")
+
+        try:
+            loan = Loan.objects.get(id=loan_id, user=borrower)
+
+        except Loan.DoesNotExist:
+            messages.error(request, "Loan not found.")
+            return redirect("repay_loan")
+
+        amount = Decimal(amount)
+
+        # Prevent overpaying
+        if amount > loan.balance:
+            messages.error(request, "Payment exceeds remaining balance.")
+            return redirect("repay_loan")
+
+        # Record payment
+        LoanPayment.objects.create(
+            loan=loan,
+            borrower=borrower,
+            amount=amount,
+            payment_method=payment_method,
+        )
+
+        # Update loan totals
+        loan.paid_amount += amount
+
+        if loan.paid_amount >= loan.amount:
+            loan.closed = True
+            loan.status = "Completed"
+
+        loan.save()
+
+        # Send money to lender
+        lender = loan.lender
+        print(f"Send {amount} to lender {lender.username}")   # Placeholder
+
+        messages.success(request, "Payment successful!")
+        return redirect("repay_loan")
+
+    # If GET and a loan is selected
+    selected_id = request.GET.get("loan")
+
+    if selected_id:
+        try:
+            selected_loan = Loan.objects.get(id=selected_id, user=borrower)
+            selected_loan_data = selected_loan
+        except Loan.DoesNotExist:
+            selected_loan_data = None
+
+    return render(request, "borrower/repay_loan.html", {
+        "active_loans": active_loans,
+        "selected_loan_data": selected_loan_data,
+        "payment_amount": payment_amount,
+        "payment_method": payment_method
+    })
 
 @login_required
 def notifications(request):

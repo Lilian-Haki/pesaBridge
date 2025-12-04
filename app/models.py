@@ -36,26 +36,6 @@ class LenderWallet(models.Model):
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
 
-# class Loan(models.Model):
-#     STATUS_CHOICES = (
-#         ("pending", "Pending"),
-#         ("approved", "Approved"),
-#         ("rejected", "Rejected"),
-#         ("funded", "Funded"),
-#         ("active", "Active"),
-#         ("completed", "Completed"),
-#     )
-#
-#     borrower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="borrower_loans")
-#     lender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="lender_loans")
-#     amount = models.DecimalField(max_digits=12, decimal_places=2)
-#     duration_months = models.IntegerField()
-#     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     risk_score = models.IntegerField(default=50)  # 0–100
-#     risk_level = models.CharField(max_length=20, default="Medium")  # Auto-calculated later
-#     purpose = models.CharField(max_length=255, null=True, blank=True)
-
 class Transaction(models.Model):
     lender = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
@@ -119,16 +99,6 @@ class Loan(models.Model):
         related_name='final_loan'
     )
 
-    @property
-    def monthly_payment(self):
-        pv = self.amount
-        n = self.duration
-        monthly_rate = (self.interest_rate / 100) / 12
-        if monthly_rate == 0:
-            payment = pv / n
-        else:
-            payment = (monthly_rate * pv) / (1 - (1 + monthly_rate) ** -n)
-        return round(payment, 2)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='loans')
     lender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='funded_loans_v2')
     amount = models.DecimalField(max_digits=12, decimal_places=2)
@@ -149,10 +119,25 @@ class Loan(models.Model):
     def __str__(self):
         return f"Loan #{self.pk} - {self.user.username} - ${self.amount}"
 
-
     @property
-    def remaining_balance(self):
-        return max(self.amount - self.paid_amount, Decimal('0.00'))
+    def monthly_payment_value(self):
+        pv = self.amount
+        n = self.duration
+        monthly_rate = (self.interest_rate / 100) / 12
+
+        if monthly_rate == 0:
+            payment = pv / n
+        else:
+            payment = (monthly_rate * pv) / (1 - (1 + monthly_rate) ** -n)
+
+        return round(payment, 2)
+
+    def save(self, *args, **kwargs):
+        if self.amount and self.duration and self.interest_rate:
+            self.monthly_payment = self.monthly_payment_value
+        super().save(*args, **kwargs)
+
+        super().save(*args, **kwargs)
 
     @property
     def interest(self):
@@ -167,30 +152,21 @@ class Loan(models.Model):
         return self.user.get_full_name() or self.user.username
 
     @property
+    def balance(self):
+        return float(self.amount) - float(self.paid_amount)
+
+    @property
     def next_payment(self):
         # TODO: implement logic to calculate next payment date if needed
         return "N/A"
 
 
-
-
-class Payment(models.Model):
-    loan = models.ForeignKey('Loan', on_delete=models.CASCADE, related_name='payments')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
-    amount = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
-    method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
-    reference = models.CharField(max_length=200, blank=True, null=True)  # optional transaction id
-    created_at = models.DateTimeField(default=timezone.now)
-    processed = models.BooleanField(default=False)
+class LoanPayment(models.Model):
+    loan = models.ForeignKey(Loan, on_delete=models.CASCADE, related_name="payments")
+    borrower = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    payment_method = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Payment #{self.pk} - Loan {self.loan.pk} - {self.amount}"
-
-    def apply(self):
-        """
-        Mark as processed and add to loan tally. Should be called after payment processor confirms success.
-        """
-        if not self.processed:
-            self.loan.add_payment(self.amount)
-            self.processed = True
-            self.save(update_fields=['processed'])
+        return f"Payment {self.amount} for Loan {self.loan.id}"

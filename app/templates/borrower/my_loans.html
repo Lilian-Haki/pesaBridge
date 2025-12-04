@@ -12,7 +12,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm text-gray-500">Total Borrowed</p>
-                <p class="text-2xl font-bold">${{ amount }}</p>
+                <p class="text-2xl font-bold">${{ total_borrowed }}</p>
             </div>
             <!-- Replace with icon later -->
             <div class="h-8 w-8 bg-blue-100 rounded-full"></div>
@@ -47,7 +47,6 @@
 <div class="space-y-6">
 {% for l in loans %}
 {% with progress=l.progress_percent %}
-  {{ progress }}%
 
     <div class="bg-white shadow rounded-xl overflow-hidden">
 
@@ -117,7 +116,7 @@
 
                 <div>
                     <p class="text-xs text-gray-500">Monthly Payment</p>
-                    <p class="text-sm font-medium">${{ l.monthly_payment }}</p>
+                    <p class="text-sm font-medium">${{ l.monthly_payment_value }}</p>
                 </div>
 
             </div>
