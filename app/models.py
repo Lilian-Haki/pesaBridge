@@ -42,28 +42,27 @@ class Transaction(models.Model):
     type = models.CharField(max_length=20) # deposit, funding
     timestamp = models.DateTimeField(auto_now_add=True)
 
+# LOAN_STATUS = (
+#     ('pending', 'Pending'),
+#     ('approved', 'Approved'),
+#     ('rejected', 'Rejected'),
+#     ('closed', 'Closed'),
+# )
+#
 
-
-LOAN_STATUS = (
-    ('pending', 'Pending'),
-    ('approved', 'Approved'),
-    ('rejected', 'Rejected'),
-    ('closed', 'Closed'),
-)
-
-APPLICATION_STATUS = (
-    ('pending', 'Pending'),
-    ('approved', 'Approved'),
-    ('rejected', 'Rejected'),
-)
-
-PAYMENT_METHODS = (
-    ('card', 'Card'),
-    ('bank', 'Bank Transfer'),
-    ('wallet', 'Wallet'),
-)
+#
+# PAYMENT_METHODS = (
+#     ('card', 'Card'),
+#     ('bank', 'Bank Transfer'),
+#     ('wallet', 'Wallet'),
+# )
 
 class LoanApplication(models.Model):
+    APPLICATION_STATUS = (
+         ('pending', 'Pending'),
+         ('approved', 'Approved'),
+         ('rejected', 'Rejected'),
+     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='loan_applications')
     amount = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(1)])
     purpose = models.CharField(max_length=100)
@@ -84,6 +83,11 @@ class LoanApplication(models.Model):
         return f"Application #{self.pk} - {self.user} - {self.purpose} - {self.duration}- {self.monthly_income} - {self.employment_status} - {self.description} - {self.status}"
 
 class Loan(models.Model):
+    LOAN_STATUS = (
+        ("Active", "Active"),  # MUST MATCH EXACTLY
+        ("Completed", "Completed"),
+        ("Pending", "Pending"),
+    )
     @property
     def progress_percent(self):
         if self.amount == 0:
@@ -137,8 +141,6 @@ class Loan(models.Model):
             self.monthly_payment = self.monthly_payment_value
         super().save(*args, **kwargs)
 
-        super().save(*args, **kwargs)
-
     @property
     def interest(self):
         return self.amount * (self.interest_rate / 100)
@@ -153,7 +155,7 @@ class Loan(models.Model):
 
     @property
     def balance(self):
-        return float(self.amount) - float(self.paid_amount)
+        return Decimal(self.amount + self.interest - self.paid_amount)
 
     @property
     def next_payment(self):
@@ -163,7 +165,7 @@ class Loan(models.Model):
 
 class LoanPayment(models.Model):
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE, related_name="payments")
-    borrower = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     payment_method = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)

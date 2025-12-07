@@ -101,6 +101,15 @@ LOGGING = {
     },
 }
 
+MPESA_CONSUMER_KEY = "crJeen9qbKwwzFgSgjJuxoDg8agVvDhQ2LAF8o6hDzuMnTzp"
+MPESA_CONSUMER_SECRET = "2GW86tmbUcV9adZLDBxLn03AwjA30tZOZA6MO85L6GNSGYRURruX1jvggZUUH8t2"
+MPESA_SHORTCODE = "600XXX"
+MPESA_PASSKEY = "your_passkey_here"   # Required for STK Push
+MPESA_CALLBACK_URL = "https://yourdomain.com/mpesa/callback/"
+
+# Optional C2B
+MPESA_CONFIRMATION_URL = "https://yourdomain.com/mpesa/confirmation/"
+MPESA_VALIDATION_URL = "https://yourdomain.com/mpesa/validation/"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

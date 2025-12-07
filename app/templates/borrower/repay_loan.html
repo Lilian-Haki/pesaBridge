@@ -2,7 +2,21 @@
 {% block content %}
 
 <h1 class="text-3xl font-bold mb-4">Repay Loan</h1>
-
+<!-- Messages -->
+{% if messages %}
+<div class="max-w-5xl mx-auto mb-6">
+    {% for message in messages %}
+    <div class="p-4 rounded mb-2
+        {% if message.tags == 'error' %}bg-red-100 text-red-800{% endif %}
+        {% if message.tags == 'success' %}bg-green-100 text-green-800{% endif %}
+        {% if message.tags == 'warning' %}bg-yellow-100 text-yellow-800{% endif %}
+        {% if message.tags == 'info' %}bg-blue-100 text-blue-800{% endif %}
+    ">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 <div class="max-w-5xl mx-auto">
 
     <!-- Page Header -->
@@ -30,11 +44,12 @@
 
                         <option value="" disabled selected>Choose a loan</option>
 
-                        {% for loan in active_loans %}
-                        <option value="{{ loan.id }}">
-                            {{ loan.name }} - ${{ loan.balance|floatformat:0 }} remaining
-                        </option>
-                        {% endfor %}
+                       {% for loan in active_loans %}
+<option value="{{ loan.id }}">
+    {{ loan.purpose }} (Loan #{{ loan.id }}) - ${{ loan.balance|floatformat:2 }} remaining
+</option>
+{% endfor %}
+
                     </select>
                 </div>
 
@@ -89,31 +104,37 @@
                     <div class="space-y-3">
 
                         <!-- Card -->
-                        <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-100">
-                            <input type="radio" name="payment_method" value="card" required />
-                            <span>Credit/Debit Card</span>
-                        </label>
+{#                        <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-100">#}
+{#                            <input type="radio" name="payment_method" value="card" required />#}
+{#                            <span>Credit/Debit Card</span>#}
+{#                        </label>#}
 
                         <!-- Bank -->
-                        <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-100">
-                            <input type="radio" name="payment_method" value="bank" />
-                            <span>Bank Transfer</span>
-                        </label>
+{#                        <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-100">#}
+{#                            <input type="radio" name="payment_method" value="bank" />#}
+{#                            <span>Bank Transfer</span>#}
+{#                        </label>#}
 
                         <!-- Wallet -->
-                        <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-100">
-                            <input type="radio" name="payment_method" value="wallet" />
-                            <span>Digital Wallet</span>
-                        </label>
+<form method="POST" action="{% url 'repay_loan' %}">
+    {% csrf_token %}
+    <input type="hidden" name="loan_id" value="{{ selected_loan_data.id }}">
+    <input type="number" name="amount" value="{{ selected_loan_data.balance }}" required>
+    <button type="submit" class="btn btn-primary">Pay with M-Pesa</button>
+</form>
+{#                        <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-100">#}
+{#                            <input type="radio" name="payment_method" value="mpesa" />#}
+{#                            <span>M-Pesa</span>#}
+{#                        </label>#}
 
                     </div>
                 </div>
 
                 <!-- Submit -->
-                <button type="submit"
-                    class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">
-                    Make Payment
-                </button>
+{#                <button type="submit"#}
+{#                    class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">#}
+{#                    Make Payment#}
+{#                </button>#}
             </form>
         </div>
 
