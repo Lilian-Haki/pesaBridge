@@ -101,15 +101,27 @@ LOGGING = {
     },
 }
 
-MPESA_CONSUMER_KEY = "crJeen9qbKwwzFgSgjJuxoDg8agVvDhQ2LAF8o6hDzuMnTzp"
-MPESA_CONSUMER_SECRET = "2GW86tmbUcV9adZLDBxLn03AwjA30tZOZA6MO85L6GNSGYRURruX1jvggZUUH8t2"
-MPESA_SHORTCODE = "600XXX"
-MPESA_PASSKEY = "your_passkey_here"   # Required for STK Push
-MPESA_CALLBACK_URL = "https://yourdomain.com/mpesa/callback/"
+# ============================================
+# M-PESA SANDBOX CONFIGURATION
+# ============================================
 
-# Optional C2B
-MPESA_CONFIRMATION_URL = "https://yourdomain.com/mpesa/confirmation/"
-MPESA_VALIDATION_URL = "https://yourdomain.com/mpesa/validation/"
+MPESA_ENVIRONMENT = 'sandbox'
+MPESA_CONSUMER_KEY = 'crJeen9qbKwwzFgSgjJuxoDg8agVvDhQ2LAF8o6hDzuMnTzp'  # Replace with your actual key
+MPESA_CONSUMER_SECRET = '2GW86tmbUcV9adZLDBxLn03AwjA30tZOZA6MO85L6GNSGYRURruX1jvggZUUH8t2'  # Replace with your actual secret
+MPESA_SHORTCODE = '174379'
+MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
+MPESA_AUTH_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+MPESA_STK_PUSH_URL = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
+MPESA_CALLBACK_URL = 'https://your-ngrok-url.ngrok.io/mpesa/callback/'
+
+# ============================================
+# SANDBOX TEST PHONE NUMBERS
+# ============================================
+# Use these numbers for testing:
+# - 254708374149
+# - 254708374142
+# - 254708374143
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

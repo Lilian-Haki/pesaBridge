@@ -1,11 +1,7 @@
 import json
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from app.mpesa.stk_push import lipa_na_mpesa_stk_push
-import requests
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from requests.auth import HTTPBasicAuth
-from .utils.mpesa import get_mpesa_access_token, generate_stk_password
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.db.models import Sum, DecimalField, F
@@ -18,7 +14,8 @@ import csv
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import LoanApplicationForm
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
+
 # Create your views here.
 User = get_user_model()
 
@@ -162,93 +159,235 @@ def format_phone_for_mpesa(phone):
     if phone.startswith("0"):
         phone = "254" + phone[1:]
     return phone
+
+
 @login_required
 def repay_loan(request):
-    active_loans = Loan.objects.filter(user=request.user, status="Active")
+    """
+    Handle loan repayment via M-Pesa STK Push
+    """
+    # Get all active loans for this borrower
+    active_loans = Loan.objects.filter(
+        user=request.user,
+        status="Active",
+        closed=False
+    ).order_by('-funded_date')
+
     selected_loan_data = None
 
     if request.method == "POST":
         loan_id = request.POST.get("loan")
         amount = request.POST.get("amount")
 
+        # Validation
         if not loan_id or not amount:
             messages.error(request, "Please select a loan and enter an amount.")
             return redirect("repay_loan")
 
+        # Validate amount
         try:
             amount = Decimal(amount)
-        except:
-            messages.error(request, "Invalid amount")
+            if amount <= 0:
+                messages.error(request, "Amount must be greater than zero.")
+                return redirect("repay_loan")
+        except (ValueError, InvalidOperation):
+            messages.error(request, "Invalid amount format.")
             return redirect("repay_loan")
 
+        # Get the loan
         try:
             loan = Loan.objects.get(id=loan_id, user=request.user)
         except Loan.DoesNotExist:
             messages.error(request, "Loan not found.")
             return redirect("repay_loan")
 
-        if amount > loan.balance:
-            messages.error(request, "Payment exceeds outstanding loan balance.")
+        # Check if loan is active
+        if loan.status != "Active" or loan.closed:
+            messages.error(request, "This loan is not active.")
             return redirect("repay_loan")
 
-        # Format phone
+        # Check if amount exceeds balance
+        if amount > loan.balance:
+            messages.error(request, f"Payment amount (${amount}) exceeds outstanding balance (${loan.balance}).")
+            return redirect("repay_loan")
+
+        # Format phone number for M-Pesa
         phone = request.user.phone
-        if phone.startswith("07"):
+        if not phone:
+            messages.error(request, "Phone number not found in your profile. Please update your profile.")
+            return redirect("profile")
+
+        # Format to international format (254XXXXXXXXX)
+        phone = str(phone).strip()
+        phone = phone.replace(" ", "").replace("-", "").replace("+", "")
+
+        if phone.startswith("0"):
             phone = "254" + phone[1:]
+        elif phone.startswith("7") or phone.startswith("1"):
+            phone = "254" + phone
+        elif not phone.startswith("254"):
+            messages.error(request, "Invalid phone number format. Please update your profile.")
+            return redirect("profile")
 
-        # STK PUSH
-        response = lipa_na_mpesa_stk_push(
-            phone=phone,
-            amount=amount,
-            account_reference=f"Loan-{loan.id}",
-            description="Loan Repayment",
-        )
+        # Initiate M-Pesa STK Push
+        try:
+            response = lipa_na_mpesa_stk_push(
+                phone=phone,
+                amount=int(amount),  # M-Pesa requires integer amount
+                account_reference=f"Loan-{loan.id}",
+                description=f"Loan Repayment for Loan #{loan.id}",
+            )
 
-        if response.get("ResponseCode") == "0":
-            messages.success(request, "Check your phone and enter your M-Pesa PIN.")
-        else:
-            messages.error(request, "Failed to initiate STK push.")
+            # Check response
+            if response and response.get("ResponseCode") == "0":
+                messages.success(
+                    request,
+                    "Payment request sent! Please check your phone and enter your M-Pesa PIN to complete the payment."
+                )
+            else:
+                error_message = response.get("errorMessage", "Unknown error") if response else "No response from M-Pesa"
+                messages.error(request, f"Failed to initiate payment: {error_message}")
+
+        except Exception as e:
+            messages.error(request, f"Payment error: {str(e)}")
+            print(f"M-Pesa STK Push Error: {e}")
 
         return redirect("repay_loan")
 
-    # GET selected loan
-    loan_id = request.GET.get("loan_id")
+    # GET request - handle loan selection via query parameter
+    loan_id = request.GET.get("loan")
     if loan_id:
-        selected_loan_data = Loan.objects.filter(id=loan_id, user=request.user).first()
+        try:
+            selected_loan_data = Loan.objects.get(id=loan_id, user=request.user)
+        except Loan.DoesNotExist:
+            messages.warning(request, "Selected loan not found.")
 
-    return render(request, "borrower/repay_loan.html", {
+    context = {
         "active_loans": active_loans,
         "selected_loan_data": selected_loan_data,
-    })
+    }
+
+    return render(request, "borrower/repay_loan.html", context)
+
 
 @csrf_exempt
 def mpesa_stk_callback(request):
-    data = json.loads(request.body.decode('utf-8'))
+    """
+    Handle M-Pesa STK Push callback
+    This endpoint receives payment confirmation from M-Pesa
+    """
+    try:
+        # Parse the JSON data from M-Pesa
+        data = json.loads(request.body.decode('utf-8'))
 
-    stk = data["Body"]["stkCallback"]
-    result_code = stk["ResultCode"]
+        # Log the callback for debugging
+        print("M-Pesa Callback Received:")
+        print(json.dumps(data, indent=2))
 
-    if result_code != 0:
-        return JsonResponse({"message": "Payment failed"}, status=200)
+        # Extract the STK callback data
+        stk_callback = data.get("Body", {}).get("stkCallback", {})
+        result_code = stk_callback.get("ResultCode")
 
-    callback_items = stk["CallbackMetadata"]["Item"]
+        # Check if payment was successful
+        if result_code != 0:
+            result_desc = stk_callback.get("ResultDesc", "Payment failed")
+            print(f"Payment failed: {result_desc}")
+            return JsonResponse({
+                "ResultCode": 0,
+                "ResultDesc": "Callback received"
+            }, status=200)
 
-    amount = callback_items[0]["Value"]
-    phone = callback_items[4]["Value"]
+        # Extract callback metadata
+        callback_metadata = stk_callback.get("CallbackMetadata", {})
+        items = callback_metadata.get("Item", [])
 
-    account_ref = data["Body"]["stkCallback"].get("AccountReference", "")
-    loan_id = account_ref.split("-")[1]
+        # Parse callback items
+        amount = None
+        mpesa_receipt = None
+        phone = None
 
-    loan = Loan.objects.get(id=loan_id)
+        for item in items:
+            name = item.get("Name")
+            value = item.get("Value")
 
-    loan.paid_amount += Decimal(amount)
-    if loan.paid_amount >= loan.amount:
-        loan.status = "Completed"
-        loan.closed = True
-    loan.save()
+            if name == "Amount":
+                amount = Decimal(str(value))
+            elif name == "MpesaReceiptNumber":
+                mpesa_receipt = value
+            elif name == "PhoneNumber":
+                phone = value
 
-    return JsonResponse({"message": "Payment recorded"}, status=200)
+        # Extract account reference (contains loan ID)
+        account_ref = stk_callback.get("AccountReference", "")
 
+        # Parse loan ID from account reference (format: "Loan-{loan_id}")
+        if not account_ref.startswith("Loan-"):
+            print(f"Invalid account reference: {account_ref}")
+            return JsonResponse({
+                "ResultCode": 0,
+                "ResultDesc": "Invalid account reference"
+            }, status=200)
+
+        try:
+            loan_id = int(account_ref.split("-")[1])
+        except (IndexError, ValueError):
+            print(f"Could not parse loan ID from: {account_ref}")
+            return JsonResponse({
+                "ResultCode": 0,
+                "ResultDesc": "Invalid loan ID"
+            }, status=200)
+
+        # Get the loan
+        try:
+            loan = Loan.objects.get(id=loan_id)
+        except Loan.DoesNotExist:
+            print(f"Loan not found: {loan_id}")
+            return JsonResponse({
+                "ResultCode": 0,
+                "ResultDesc": "Loan not found"
+            }, status=200)
+
+        # Update loan with payment
+        loan.paid_amount += amount
+
+        # Check if loan is fully paid
+        if loan.paid_amount >= (loan.amount + loan.interest):
+            loan.status = "Completed"
+            loan.closed = True
+
+        loan.save()
+
+        # Create payment record
+        LoanPayment.objects.create(
+            loan=loan,
+            user=loan.user,
+            amount=amount,
+            payment_method="M-Pesa",
+        )
+
+        print(f"Payment recorded: Loan #{loan_id}, Amount: ${amount}, Receipt: {mpesa_receipt}")
+
+        # Return success response to M-Pesa
+        return JsonResponse({
+            "ResultCode": 0,
+            "ResultDesc": "Payment received successfully"
+        }, status=200)
+
+    except json.JSONDecodeError as e:
+        print(f"JSON decode error: {e}")
+        return JsonResponse({
+            "ResultCode": 1,
+            "ResultDesc": "Invalid JSON"
+        }, status=400)
+
+    except Exception as e:
+        print(f"Callback error: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            "ResultCode": 1,
+            "ResultDesc": str(e)
+        }, status=500)
 
 @login_required
 def notifications(request):
@@ -541,8 +680,6 @@ def transaction_history(request):
     """
     if request.user.role != "lender":
         return redirect("borrower")
-
-    from datetime import datetime, timedelta
 
     # Get all transactions from different sources
     transactions_list = []
