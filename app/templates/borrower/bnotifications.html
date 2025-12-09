@@ -1,0 +1,77 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Notification Section -->
+<main class="container mx-auto px-4 py-8">
+    <div class="mx-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-primary/10 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3c0 .386-.146.735-.405 1.001L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-foreground">Borrower Notifications</h1>
+                    <p class="text-muted-foreground">
+                        {% if unread_count > 0 %}
+                            {{ unread_count }} unread messages
+                        {% else %}
+                            All caught up!
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <button class="text-sm text-primary hover:underline">
+                Mark all as read
+            </button>
+        </div>
+
+        <!-- Notifications List -->
+        <div class="space-y-3">
+            {% for notification in notifications %}
+            <div class="p-4 rounded-lg border transition-colors {% if notification.read %}bg-card border-border{% else %}bg-primary/5 border-primary/20{% endif %}">
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0 mt-1">
+                        <div class="p-2 bg-background rounded-full border border-border">
+                            {{ notification.icon|safe }}
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between gap-2">
+                            <h3 class="font-medium {% if not notification.read %}text-foreground{% else %}text-muted-foreground{% endif %}">
+                                {{ notification.title }}
+                                {% if not notification.read %}
+                                    <span class="ml-2 inline-block w-2 h-2 bg-primary rounded-full"></span>
+                                {% endif %}
+                            </h3>
+                            <span class="text-xs text-muted-foreground whitespace-nowrap">
+                                {{ notification.created_at|timesince }} ago
+                            </span>
+                        </div>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            {{ notification.message }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Empty State -->
+        {% if notifications|length == 0 %}
+        <div class="text-center py-12">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-muted-foreground mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3c0 .386-.146.735-.405 1.001L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-foreground">No notifications</h3>
+            <p class="text-muted-foreground">You're all caught up!</p>
+        </div>
+        {% endif %}
+    </div>
+</main>
+
+{% endblock %}

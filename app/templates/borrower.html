@@ -1,7 +1,87 @@
 {% extends "base1.html" %}
 {% block content %}
-			<div class="p-4">
-				<h1 class="text-2xl font-bold">Welcome, {{ name }} 👋 Welcome ,{{ first_name }} {{ lastname }}!</h1>
-				<p class="mt-2 text-gray-600">This is an example dashboard using Tailwind CSS.</p>
-			</div>
+<div class="min-h-screen bg-background">
+    <main class="container mx-auto px-4 py-8">
+
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-foreground">Welcome back, {{ user.first_name }} {{ user.last_name }}!</h1>
+            <p class="text-muted-foreground mt-1">Here's an overview of your loans and payments</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {% for stat in stats %}
+            <div class="border border-border/50 bg-card p-4 rounded-xl hover:shadow-lg transition-shadow">
+                <div class="flex justify-between items-center pb-2">
+                    <p class="text-sm font-medium text-muted-foreground">{{ stat.title }}</p>
+                    <span class="text-primary">{{ stat.icon }}</span>
+                </div>
+                <div class="text-2xl font-bold text-foreground">{{ stat.value }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Active Loans -->
+        <div class="border border-border/50 bg-card rounded-xl mb-8 p-6">
+            <h2 class="font-bold text-xl mb-4">Active Loans</h2>
+            {% for loan in loans %}
+            <div class="mb-4 border-b pb-2">
+                <div class="flex justify-between">
+                    <span>Loan #{{ loan.id }} - ${{ loan.amount }}</span>
+                    <span class="{% if loan.status == 'Due Soon' %}text-red-600{% else %}text-green-600{% endif %}">{{ loan.status }}</span>
+                </div>
+                <div class="w-full bg-muted h-2 rounded-full mt-2">
+                    <div class="h-full bg-primary" style="width: {{ loan.progress_percent }}%"></div>
+                </div>
+                <div class="flex justify-between text-sm text-muted-foreground mt-1">
+                    <span>Remaining: ${{loan.amount}} + ${{loan.interest_rate}} - ${{loan.paid_amount}}</span>
+                    <span>Next Payment: {{ loan.next_payment|default:"N/A" }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <p>No active loans.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="border border-border/50 bg-card rounded-xl p-6">
+            <h2 class="font-bold text-xl mb-2">Recent Activity</h2>
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b border-border/50">
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for act in recent_activity %}
+                    <tr class="border-b border-border/30">
+                        <td class="py-2 text-muted-foreground">{{ act.date }}</td>
+                        <td>{{ act.description }}</td>
+                        <td class="text-right {% if act.type == 'payment' %}text-red-600{% else %}text-green-600{% endif %}">${{ act.amount }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3">No recent activity.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <a href="{% url 'apply_loan' %}" class="block">
+                <button class="w-full border rounded-lg px-4 py-2 flex items-center justify-center">💳 Apply for New Loan</button>
+            </a>
+            <a href="{% url 'repay_loan' %}" class="block">
+                <button class="w-full border rounded-lg px-4 py-2 flex items-center justify-center">💵 Make a Payment</button>
+            </a>
+            <a href="{% url 'my_loans' %}" class="block">
+                <button class="w-full border rounded-lg px-4 py-2 flex items-center justify-center">📅 View Payment Schedule</button>
+            </a>
+        </div>
+
+    </main>
+</div>
 {% endblock %}

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-&459f)=@*w!x9-*)_h%ljhmuul6xw7@*dj6_b5-n&-esmxjno7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['69c32c275771.ngrok-free.app', 'localhost', '127.0.0.1']
 AUTH_USER_MODEL = "app.User"
 
 # Application definition
@@ -104,23 +104,24 @@ LOGGING = {
 # ============================================
 # M-PESA SANDBOX CONFIGURATION
 # ============================================
+# ============================================
+# M-PESA SANDBOX CONFIGURATION
+# ============================================
 
-MPESA_ENVIRONMENT = 'sandbox'
+MPESA_ENV = "sandbox"
+# Consumer info
 MPESA_CONSUMER_KEY = 'crJeen9qbKwwzFgSgjJuxoDg8agVvDhQ2LAF8o6hDzuMnTzp'  # Replace with your actual key
-MPESA_CONSUMER_SECRET = '2GW86tmbUcV9adZLDBxLn03AwjA30tZOZA6MO85L6GNSGYRURruX1jvggZUUH8t2'  # Replace with your actual secret
-MPESA_SHORTCODE = '174379'
+MPESA_CONSUMER_SECRET = '2GW86tmbUcV9adZLDBxLn03AwjA30tZOZA6MO85L6GNSGYRURruX1jvggZUUH8t2'
+# Paybill Shortcode (Sandbox default)
+MPESA_SHORTCODE = "174379"
+# Passkey
 MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
-MPESA_AUTH_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
-MPESA_STK_PUSH_URL = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
-MPESA_CALLBACK_URL = 'https://your-ngrok-url.ngrok.io/mpesa/callback/'
+# Auth + STK URLs
+MPESA_AUTH_URL = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+MPESA_STK_PUSH_URL = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+# 🔥 IMPORTANT: Update this EVERY TIME ngrok gives you a new link
+MPESA_CALLBACK_URL = "https://69c32c275771.ngrok-free.app/mpesa/callback/"
 
-# ============================================
-# SANDBOX TEST PHONE NUMBERS
-# ============================================
-# Use these numbers for testing:
-# - 254708374149
-# - 254708374142
-# - 254708374143
 
 
 # Password validation

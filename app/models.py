@@ -16,20 +16,19 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
 class Notification(models.Model):
-    NOTIFICATION_TYPES = [
-        ('payment', 'Payment'),
-        ('offer', 'Offer'),
-        ('other', 'Other'),
-    ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    type = models.CharField(max_length=10, choices=NOTIFICATION_TYPES, default='other')
-    title = models.CharField(max_length=100)
-    message = models.TextField()
+    ROLE_CHOICES = (
+        ("borrower", "Borrower"),
+        ("lender", "Lender"),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    message = models.CharField(max_length=255)
     read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.type} - {self.title}"
+        return self.message
 
 class LenderWallet(models.Model):
     lender = models.OneToOneField(User, on_delete=models.CASCADE)
