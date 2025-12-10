@@ -16,6 +16,7 @@
     {% endfor %}
 </div>
 {% endif %}
+
 <div class="max-w-5xl mx-auto">
 
     <!-- Page Header -->
@@ -32,7 +33,7 @@
             <h3 class="text-xl font-semibold">Payment Details</h3>
             <p class="text-gray-500 mb-4 text-sm">Select loan and enter payment amount</p>
 
-            <form method="POST" action="{% url 'repay_loan' %}" class="space-y-6">
+            <form method="POST" action="{% url 'repay_loan' %}" class="space-y-6" id="paymentForm">
                 {% csrf_token %}
 
                 <!-- Select Loan -->
@@ -96,25 +97,50 @@
                     {% endif %}
                 </div>
 
-                <!-- Payment Method Info -->
+                <!-- Payment Method Selection -->
                 <div class="space-y-3">
-                    <p class="text-sm font-medium">Payment Method</p>
-                    <div class="p-3 border border-green-300 bg-green-50 rounded-lg">
-                        <div class="flex items-center gap-2">
-                            <span class="text-2xl">📱</span>
-                            <div>
-                                <p class="font-medium text-green-800">M-Pesa</p>
-                                <p class="text-xs text-green-600">Instant & Secure Payment</p>
+                    <p class="text-sm font-medium">Select Payment Method</p>
+
+                    <!-- M-Pesa Option -->
+                    <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition payment-method-option"
+                           onclick="selectPaymentMethod('mpesa')">
+                        <input type="radio" name="payment_method" value="mpesa" id="mpesa_radio"
+                               class="w-5 h-5 text-green-600" required>
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">📱</span>
+                                <div>
+                                    <p class="font-medium text-gray-800">M-Pesa</p>
+                                    <p class="text-xs text-gray-600">Pay via STK Push</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <span class="text-green-600 font-semibold">Instant</span>
+                    </label>
+
+                    <!-- Manual Payment Option -->
+                    <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition payment-method-option"
+                           onclick="selectPaymentMethod('manual')">
+                        <input type="radio" name="payment_method" value="manual" id="manual_radio"
+                               class="w-5 h-5 text-blue-600" required>
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">💳</span>
+                                <div>
+                                    <p class="font-medium text-gray-800">Manual Payment</p>
+                                    <p class="text-xs text-gray-600">Direct deduction (Testing)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-blue-600 font-semibold">Instant</span>
+                    </label>
                 </div>
 
-                <!-- Submit Button -->
+                <!-- Submit Button (changes based on payment method) -->
                 {% if selected_loan_data %}
-                <button type="submit"
-                    class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition font-medium">
-                    Pay with M-Pesa
+                <button type="submit" id="submitBtn"
+                    class="w-full bg-gray-400 text-white py-3 rounded-lg cursor-not-allowed transition font-medium" disabled>
+                    Select Payment Method
                 </button>
                 {% else %}
                 <button type="button" disabled
@@ -160,8 +186,8 @@
                 <!-- Payment Method -->
                 <div class="flex justify-between py-3 border-b">
                     <span class="text-gray-500">Payment Method</span>
-                    <span class="font-medium">
-                        M-Pesa
+                    <span class="font-medium" id="selectedMethodDisplay">
+                        Not selected
                     </span>
                 </div>
 
@@ -176,30 +202,29 @@
 
             <!-- Payment Tips -->
             <div class="bg-white shadow rounded-xl p-6">
-                <h3 class="text-xl font-semibold mb-2">Payment Tips</h3>
+                <h3 class="text-xl font-semibold mb-2">Payment Methods</h3>
 
-                <ul class="text-gray-600 text-sm space-y-2">
-                    <li class="flex items-start gap-2">
-                        <span class="text-green-600 mt-0.5">✓</span>
-                        <span>Check your phone for M-Pesa STK push</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-green-600 mt-0.5">✓</span>
-                        <span>Enter your M-Pesa PIN to complete payment</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-green-600 mt-0.5">✓</span>
-                        <span>Payment is processed instantly</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-green-600 mt-0.5">✓</span>
-                        <span>Paying more reduces interest charges</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-green-600 mt-0.5">✓</span>
-                        <span>Early repayment has no penalties</span>
-                    </li>
-                </ul>
+                <div class="space-y-4">
+                    <!-- M-Pesa Info -->
+                    <div class="p-3 bg-green-50 rounded-lg">
+                        <p class="font-medium text-green-800 mb-1">📱 M-Pesa</p>
+                        <ul class="text-sm text-green-700 space-y-1">
+                            <li>• Check phone for STK push</li>
+                            <li>• Enter M-Pesa PIN</li>
+                            <li>• Instant confirmation</li>
+                        </ul>
+                    </div>
+
+                    <!-- Manual Info -->
+                    <div class="p-3 bg-blue-50 rounded-lg">
+                        <p class="font-medium text-blue-800 mb-1">💳 Manual Payment</p>
+                        <ul class="text-sm text-blue-700 space-y-1">
+                            <li>• Instant deduction</li>
+                            <li>• For testing purposes</li>
+                            <li>• No phone verification needed</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             {% if not active_loans %}
@@ -213,5 +238,58 @@
         </div>
     </div>
 </div>
+
+<script>
+function selectPaymentMethod(method) {
+    // Update radio button
+    if (method === 'mpesa') {
+        document.getElementById('mpesa_radio').checked = true;
+    } else {
+        document.getElementById('manual_radio').checked = true;
+    }
+
+    // Update visual feedback
+    document.querySelectorAll('.payment-method-option').forEach(option => {
+        option.classList.remove('border-green-500', 'border-blue-500', 'bg-green-50', 'bg-blue-50', 'border-2');
+    });
+
+    const selectedOption = event.currentTarget;
+    if (method === 'mpesa') {
+        selectedOption.classList.add('border-green-500', 'bg-green-50', 'border-2');
+    } else {
+        selectedOption.classList.add('border-blue-500', 'bg-blue-50', 'border-2');
+    }
+
+    // Update submit button
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+
+        if (method === 'mpesa') {
+            submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            submitBtn.textContent = 'Pay with M-Pesa';
+        } else {
+            submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            submitBtn.textContent = 'Process Manual Payment';
+        }
+    }
+
+    // Update summary display
+    const display = document.getElementById('selectedMethodDisplay');
+    if (display) {
+        display.textContent = method === 'mpesa' ? 'M-Pesa' : 'Manual Payment';
+    }
+}
+
+// Prevent form submission without payment method
+document.getElementById('paymentForm')?.addEventListener('submit', function(e) {
+    const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+    if (!paymentMethod) {
+        e.preventDefault();
+        alert('Please select a payment method');
+    }
+});
+</script>
 
 {% endblock %}

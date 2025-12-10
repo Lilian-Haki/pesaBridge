@@ -1,7 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from . import views
-from .views import logout_user
+from .views import logout_user, test_mpesa_callback
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -11,7 +11,7 @@ urlpatterns = [
     path('mpesa/callback/', views.mpesa_stk_callback, name='mpesa_callback'),
     path('export-csv/', views.export_csv, name='export_csv'),
     path('admin-panel/', views.admin_panel, name='admin_panel'),
-
+    path('test-callback/', test_mpesa_callback, name='test_callback'),
 
     #BORROWER REDIRECTS
     path("borrower/bnotifications/", views.bnotifications, name="bnotifications"),

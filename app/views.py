@@ -164,7 +164,7 @@ def format_phone_for_mpesa(phone):
 @login_required
 def repay_loan(request):
     """
-    Handle loan repayment via M-Pesa STK Push
+    Handle loan repayment via M-Pesa STK Push or Manual Payment
     """
     print("\n" + "=" * 70)
     print("REPAY LOAN VIEW CALLED")
@@ -185,13 +185,19 @@ def repay_loan(request):
         print("\n--- POST REQUEST ---")
         loan_id = request.POST.get("loan")
         amount = request.POST.get("amount")
+        payment_method = request.POST.get("payment_method")  # NEW: Get payment method
 
         print(f"Loan ID: {loan_id}")
         print(f"Amount: {amount}")
+        print(f"Payment Method: {payment_method}")
 
         # Validation
         if not loan_id or not amount:
             messages.error(request, "Please select a loan and enter an amount.")
+            return redirect("repay_loan")
+
+        if not payment_method:
+            messages.error(request, "Please select a payment method.")
             return redirect("repay_loan")
 
         # Validate amount
@@ -227,86 +233,133 @@ def repay_loan(request):
             messages.error(request, f"Payment amount (${amount}) exceeds outstanding balance (${loan.balance}).")
             return redirect("repay_loan")
 
-        # Format phone number for M-Pesa
-        phone = request.user.phone
-        print(f"Original phone: {phone}")
+        # ===== PAYMENT METHOD HANDLING =====
 
-        if not phone:
-            print(f"✗ No phone number in profile")
-            messages.error(request, "Phone number not found in your profile. Please update your profile.")
-            return redirect("profile")
+        if payment_method == "manual":
+            # MANUAL PAYMENT: Instant deduction
+            print("\n--- MANUAL PAYMENT SELECTED ---")
 
-        # Format to international format (254XXXXXXXXX)
-        phone = str(phone).strip()
-        phone = phone.replace(" ", "").replace("-", "").replace("+", "")
+            try:
+                # Update loan
+                old_paid = loan.paid_amount
+                loan.paid_amount += amount
+                new_paid = loan.paid_amount
 
-        if phone.startswith("0"):
-            phone = "254" + phone[1:]
-        elif phone.startswith("7") or phone.startswith("1"):
-            phone = "254" + phone
-        elif not phone.startswith("254"):
-            print(f"✗ Invalid phone format: {phone}")
-            messages.error(request, "Invalid phone number format. Please update your profile.")
-            return redirect("profile")
+                print(f"Old paid amount: ${old_paid}")
+                print(f"Payment amount: ${amount}")
+                print(f"New paid amount: ${new_paid}")
+                print(f"Total due: ${loan.amount + loan.interest}")
 
-        print(f"Formatted phone: {phone}")
+                # Check if fully paid
+                if loan.paid_amount >= (loan.amount + loan.interest):
+                    loan.status = "Completed"
+                    loan.closed = True
+                    print(f"✓ Loan fully paid and closed")
 
-        # Check M-Pesa settings
-        print("\nChecking M-Pesa settings...")
-        try:
-            from django.conf import settings
-            print(f"Consumer Key: {settings.MPESA_CONSUMER_KEY[:20]}...")
-            print(f"Consumer Secret: {settings.MPESA_CONSUMER_SECRET[:20]}...")
-            print(f"Shortcode: {settings.MPESA_SHORTCODE}")
-            print(f"Callback URL: {settings.MPESA_CALLBACK_URL}")
-        except Exception as e:
-            print(f"✗ Settings error: {e}")
+                loan.save()
 
-        # Initiate M-Pesa STK Push
-        print("\nInitiating STK Push...")
-        try:
-            response = lipa_na_mpesa_stk_push(
-                phone=phone,
-                amount=int(amount),
-                account_reference=f"Loan-{loan.id}",
-                description=f"Loan Repayment for Loan #{loan.id}",
-            )
+                # Create payment record
+                payment = LoanPayment.objects.create(
+                    loan=loan,
+                    user=loan.user,
+                    amount=amount,
+                    payment_method="Manual"
+                )
+                print(f"✓ Payment record created: #{payment.id}")
 
-            print(f"\nSTK Push Response:")
-            print(f"Type: {type(response)}")
-            print(f"Content: {response}")
+                messages.success(
+                    request,
+                    f"Payment of ${amount} processed successfully! New balance: ${loan.balance}"
+                )
 
-            # Check response
-            if response and isinstance(response, dict):
-                response_code = response.get("ResponseCode")
-                print(f"Response Code: {response_code}")
+                print("=" * 70 + "\n")
+                return redirect("my_loans")
 
-                if response_code == "0":
-                    print("✓ STK Push successful!")
-                    messages.success(
-                        request,
-                        "Payment request sent! Please check your phone and enter your M-Pesa PIN to complete the payment."
-                    )
+            except Exception as e:
+                print(f"✗ Manual payment error: {e}")
+                import traceback
+                traceback.print_exc()
+                messages.error(request, f"Payment processing failed: {str(e)}")
+                return redirect("repay_loan")
+
+        elif payment_method == "mpesa":
+            # M-PESA PAYMENT: STK Push
+            print("\n--- M-PESA PAYMENT SELECTED ---")
+
+            # Format phone number for M-Pesa
+            phone = request.user.phone
+            print(f"Original phone: {phone}")
+
+            if not phone:
+                print(f"✗ No phone number in profile")
+                messages.error(request, "Phone number not found in your profile. Please update your profile.")
+                return redirect("bsettings")
+
+            # Format to international format (254XXXXXXXXX)
+            phone = str(phone).strip()
+            phone = phone.replace(" ", "").replace("-", "").replace("+", "")
+
+            if phone.startswith("0"):
+                phone = "254" + phone[1:]
+            elif phone.startswith("7") or phone.startswith("1"):
+                phone = "254" + phone
+            elif not phone.startswith("254"):
+                print(f"✗ Invalid phone format: {phone}")
+                messages.error(request, "Invalid phone number format. Please update your profile.")
+                return redirect("bsettings")
+
+            print(f"Formatted phone: {phone}")
+
+            # Initiate M-Pesa STK Push
+            print("\nInitiating STK Push...")
+            try:
+                response = lipa_na_mpesa_stk_push(
+                    phone=phone,
+                    amount=int(amount),
+                    account_reference=f"Loan-{loan.id}",
+                    description=f"Loan Repayment for Loan #{loan.id}",
+                )
+
+                print(f"\nSTK Push Response:")
+                print(f"Type: {type(response)}")
+                print(f"Content: {response}")
+
+                # Check response
+                if response and isinstance(response, dict):
+                    response_code = response.get("ResponseCode")
+                    print(f"Response Code: {response_code}")
+
+                    if response_code == "0":
+                        print("✓ STK Push successful!")
+                        messages.success(
+                            request,
+                            "Payment request sent! Please check your phone and enter your M-Pesa PIN to complete the payment."
+                        )
+                    else:
+                        error_message = response.get("errorMessage") or response.get(
+                            "ResponseDescription") or "Unknown error"
+                        print(f"✗ STK Push failed: {error_message}")
+                        messages.error(request, f"Failed to initiate payment: {error_message}")
                 else:
-                    error_message = response.get("errorMessage") or response.get(
-                        "ResponseDescription") or "Unknown error"
-                    print(f"✗ STK Push failed: {error_message}")
-                    messages.error(request, f"Failed to initiate payment: {error_message}")
-            else:
-                print(f"✗ Invalid response format: {response}")
-                messages.error(request, "Failed to initiate payment: Invalid response from M-Pesa")
+                    print(f"✗ Invalid response format: {response}")
+                    messages.error(request, "Failed to initiate payment: Invalid response from M-Pesa")
 
-        except Exception as e:
-            print(f"✗ Exception during STK Push: {e}")
-            import traceback
-            traceback.print_exc()
-            messages.error(request, f"Payment error: {str(e)}")
+            except Exception as e:
+                print(f"✗ Exception during STK Push: {e}")
+                import traceback
+                traceback.print_exc()
+                messages.error(request, f"Payment error: {str(e)}")
 
-        print("=" * 70 + "\n")
-        return redirect("repay_loan")
+            print("=" * 70 + "\n")
+            return redirect("repay_loan")
+
+        else:
+            messages.error(request, "Invalid payment method selected.")
+            return redirect("repay_loan")
 
     # GET request - handle loan selection via query parameter
     loan_id = request.GET.get("loan")
+
     if loan_id:
         try:
             selected_loan_data = Loan.objects.get(id=loan_id, user=request.user)
@@ -491,6 +544,55 @@ def mpesa_stk_callback(request):
             "ResultCode": 1,
             "ResultDesc": f"Processing error: {str(e)}"
         }, status=500)
+
+@login_required
+@csrf_exempt
+def test_mpesa_callback(request):
+    """
+    Manual testing endpoint to simulate M-Pesa callback
+    Use this to test your callback logic on localhost
+    """
+    if request.method == "GET":
+        # Show a form to manually trigger callback
+        return render(request, 'test_callback.html')
+
+    if request.method == "POST":
+        loan_id = request.POST.get("loan_id")
+        amount = request.POST.get("amount")
+
+        # Simulate successful callback data
+        simulated_callback = {
+            "Body": {
+                "stkCallback": {
+                    "MerchantRequestID": "test-merchant-123",
+                    "CheckoutRequestID": "test-checkout-456",
+                    "ResultCode": 0,
+                    "ResultDesc": "The service request is processed successfully.",
+                    "AccountReference": f"Loan-{loan_id}",
+                    "CallbackMetadata": {
+                        "Item": [
+                            {"Name": "Amount", "Value": float(amount)},
+                            {"Name": "MpesaReceiptNumber", "Value": f"TEST{loan_id}"},
+                            {"Name": "PhoneNumber", "Value": "254708374149"},
+                            {"Name": "TransactionDate", "Value": 20241210120000}
+                        ]
+                    }
+                }
+            }
+        }
+
+        # Process it through your callback handler
+        from django.http import HttpRequest
+        test_request = HttpRequest()
+        test_request.method = 'POST'
+        test_request._body = json.dumps(simulated_callback).encode()
+
+        response = mpesa_stk_callback(test_request)
+
+        messages.success(request, f"Test callback processed! Loan #{loan_id} updated with payment of ${amount}")
+        return redirect('my_loans')
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
 @login_required
 def bnotifications(request):
     notes = Notification.objects.filter(

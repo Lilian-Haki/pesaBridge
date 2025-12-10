@@ -1,0 +1,41 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto mt-8">
+    <div class="bg-white shadow rounded-xl p-6">
+        <h2 class="text-2xl font-bold mb-4">Test M-Pesa Callback (Localhost)</h2>
+        <p class="text-gray-600 mb-6">Manually simulate a successful M-Pesa payment callback</p>
+        
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Loan ID</label>
+                <input type="number" name="loan_id" required 
+                    class="w-full border rounded-lg px-4 py-2"
+                    placeholder="Enter loan ID">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Payment Amount</label>
+                <input type="number" step="0.01" name="amount" required 
+                    class="w-full border rounded-lg px-4 py-2"
+                    placeholder="Enter amount">
+            </div>
+            
+            <button type="submit" 
+                class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700">
+                Simulate Successful Payment
+            </button>
+        </form>
+        
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-blue-800">
+                <strong>How to test:</strong><br>
+                1. Initiate STK push from repay loan page<br>
+                2. Use this form to manually mark payment as successful<br>
+                3. Check "My Loans" to see updated balance
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
