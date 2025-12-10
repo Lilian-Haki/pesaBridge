@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['69c32c275771.ngrok-free.app', 'localhost', '127.0.0.1']
 AUTH_USER_MODEL = "app.User"
+LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login'
 
 # Application definition
 

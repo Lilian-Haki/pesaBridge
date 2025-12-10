@@ -6,7 +6,7 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.db.models import Sum, DecimalField, F
 from django.shortcuts import render, redirect,get_object_or_404
-from django.contrib.auth import authenticate,login,get_user_model
+from django.contrib.auth import authenticate, login, get_user_model, update_session_auth_hash, logout
 from .models import Notification, LenderWallet, Transaction, Loan, LoanApplication, LoanPayment
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse
@@ -42,6 +42,9 @@ def login_user(request):
             return render(request, "login.html", {"error": "Invalid credentials"})
 
     return render(request, "login.html")
+def logout_user(request):
+    logout(request)
+    return redirect("login")
 def register(request):
     if request.method == "POST":
         firstname = request.POST.get("firstname")
@@ -521,43 +524,58 @@ def bsettings(request):
     return render(request, "borrower/bsettings.html")
 @login_required
 def borrower(request):
-        """Borrower dashboard showing loans, stats, and recent activity."""
+    """Borrower dashboard showing loans, stats, and recent activity."""
 
-        loanss = Loan.objects.filter(user=request.user).order_by('-created_at')
+    # Get all loans for this user
+    loans = Loan.objects.filter(user=request.user).order_by('-created_at')
 
-        # Stats cards
-        total_borrowed = sum([l.amount for l in loanss])
-        active_loans_count = loanss.filter(status='Active', closed=False).count()
-        total_outstanding = sum([
-            (l.amount + (l.amount * l.interest_rate / 100) - l.paid_amount)
-            for l in loanss if l.status == 'Active'
-        ])
+    # Stats calculations
+    total_borrowed = sum([l.amount for l in loans])
+    active_loans_count = loans.filter(status='Active', closed=False).count()
+    total_outstanding = sum([
+        (l.amount + (l.amount * l.interest_rate / 100) - l.paid_amount)
+        for l in loans if l.status == 'Active'
+    ])
 
-        stats = [
-            {'title': 'Total Borrowed', 'value': total_borrowed, 'icon': '💰', 'change': ''},
-            {'title': 'Active Loans', 'value': active_loans_count, 'icon': '📊', 'change': ''},
-            {'title': 'Total Outstanding', 'value': total_outstanding, 'icon': '⚠️', 'change': ''},
-        ]
+    # Stats for dashboard
+    stats = [
+        {'title': 'Total Borrowed', 'value': total_borrowed, 'icon': '💰'},
+        {'title': 'Active Loans', 'value': active_loans_count, 'icon': '📊'},
+        {'title': 'Total Outstanding', 'value': total_outstanding, 'icon': '⚠️'},
+    ]
 
-        # Recent activity (last 5 payments)
-        recent_activity = [
-            {
-                'date': p.created_at.strftime('%b %d, %Y'),
-                'description': f"Repayment for Loan #{p.loan.id}",
-                'amount': p.amount,
-                'type': 'payment'
-            }
-            for p in LoanPayment.objects.filter(user=request.user).order_by('-created_at')[:5]
-        ]
+    # Build loan objects compatible with your template
+    loans_data = []
+    for loan in loans:
+        loans_data.append({
+            'id': loan.id,
+            'amount': loan.amount,
+            'status': loan.status,
+            'progress_percent': loan.progress_percent,  # Model @property
+            'paid_amount': loan.paid_amount,
+            'interest_rate': loan.interest_rate,
+            'next_payment': getattr(loan, "next_payment", None),
+        })
 
-        context = {
-            'loans': loanss,
-            'stats': stats,
-            'recent_activity': recent_activity,
-            'user': request.user,
+    # Recent activities: payments only
+    recent_activity = [
+        {
+            'date': payment.created_at.strftime('%b %d, %Y'),
+            'description': f"Repayment for Loan #{payment.loan.id}",
+            'amount': payment.amount,
+            'type': 'payment'
         }
+        for payment in LoanPayment.objects.filter(user=request.user)
+                                          .order_by('-created_at')[:5]
+    ]
 
-        return render(request, "borrower.html", {"name": request.user.username})
+    context = {
+        'stats': stats,
+        'loans': loans_data,
+        'recent_activity': recent_activity,
+    }
+
+    return render(request, 'borrower.html', context)
 @login_required
 def lender(request):
     """
@@ -1029,4 +1047,201 @@ def mark_notification_read(request, notification_id):
     notification.read = True
     notification.save()
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def settings_view(request):
+    profile = request.user
+    notifications = request.user.notifications
+
+    return render(request, "borrower/bsettings.html", {
+        "profile": profile,
+        "notifications": notifications,
+    })
+@login_required
+def update_profile(request):
+    if request.method == "POST":
+        user = request.user
+
+        # Update User fields
+        user.first_name = request.POST.get("first_name")
+        user.last_name = request.POST.get("last_name")
+        user.email = request.POST.get("email")
+        user.save()
+
+        # Update Profile fields
+        user.phone = request.POST.get("phone")
+        user.save()
+        messages.success(request, "Profile updated successfully!")
+
+    return redirect("settings")
+@login_required
+def change_password(request):
+    if request.method == "POST":
+        user = request.user
+        current = request.POST.get("current_password")
+        new = request.POST.get("new_password")
+        confirm = request.POST.get("confirm_password")
+
+        if not user.check_password(current):
+            messages.error(request, "Current password incorrect.")
+            return redirect("settings")
+
+        if new != confirm:
+            messages.error(request, "Passwords do not match.")
+            return redirect("settings")
+
+        user.set_password(new)
+        user.save()
+
+        update_session_auth_hash(request, user)
+
+        messages.success(request, "Password updated!")
+        return redirect("bsettings")
+@login_required
+def update_notifications(request):
+    if request.method == "POST":
+        n = request.user.notifications
+
+        n.email_notifications = bool(request.POST.get("email_notifications"))
+        n.sms_notifications = bool(request.POST.get("sms_notifications"))
+        n.push_notifications = bool(request.POST.get("push_notifications"))
+
+        n.loan_updates = bool(request.POST.get("loan_updates"))
+        n.payment_reminders = bool(request.POST.get("payment_reminders"))
+        n.promotions = bool(request.POST.get("promotions"))
+
+        n.save()
+        messages.success(request, "Notification preferences saved!")
+
+    return redirect("bsettings")
+@login_required
+def update_privacy(request):
+    if request.method == "POST":
+        p = request.user
+
+        p.profile_visibility = bool(request.POST.get("profile_visibility"))
+        p.activity_status = bool(request.POST.get("activity_status"))
+        p.analytics_enabled = bool(request.POST.get("analytics_enabled"))
+
+        p.save()
+        messages.success(request, "Privacy settings updated!")
+
+    return redirect("settings")
+@login_required
+def download_my_data(request):
+    user = request.user
+
+    data = f"""
+    Name: {user.first_name} {user.last_name}
+    Email: {user.email}
+    Phone: {user.phone}
+    """
+
+    response = HttpResponse(data, content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename="my_data.txt"'
+    return response
+@login_required
+def delete_account(request):
+    request.user.delete()
+    messages.success(request, "Your account has been deleted.")
+    return redirect("home")
+
+@login_required
+def lsettings_view(request):
+    profile = request.user
+    notifications = request.user.notifications
+
+    return render(request, "lender/lsettings.html", {
+        "profile": profile,
+        "notifications": notifications,
+    })
+@login_required
+def lupdate_profile(request):
+    if request.method == "POST":
+        user = request.user
+
+        # Update User fields
+        user.first_name = request.POST.get("first_name")
+        user.last_name = request.POST.get("last_name")
+        user.email = request.POST.get("email")
+        user.save()
+
+        # Update Profile fields
+        user.phone = request.POST.get("phone")
+        user.save()
+        messages.success(request, "Profile updated successfully!")
+
+    return redirect("lsettings")
+@login_required
+def lchange_password(request):
+    if request.method == "POST":
+        user = request.user
+        current = request.POST.get("current_password")
+        new = request.POST.get("new_password")
+        confirm = request.POST.get("confirm_password")
+
+        if not user.check_password(current):
+            messages.error(request, "Current password incorrect.")
+            return redirect("lsettings")
+
+        if new != confirm:
+            messages.error(request, "Passwords do not match.")
+            return redirect("lsettings")
+
+        user.set_password(new)
+        user.save()
+
+        update_session_auth_hash(request, user)
+
+        messages.success(request, "Password updated!")
+        return redirect("lsettings")
+@login_required
+def lupdate_notifications(request):
+    if request.method == "POST":
+        n = request.user.notifications
+
+        n.email_notifications = bool(request.POST.get("email_notifications"))
+        n.sms_notifications = bool(request.POST.get("sms_notifications"))
+        n.push_notifications = bool(request.POST.get("push_notifications"))
+
+        n.loan_updates = bool(request.POST.get("loan_updates"))
+        n.payment_reminders = bool(request.POST.get("payment_reminders"))
+        n.promotions = bool(request.POST.get("promotions"))
+
+        n.save()
+        messages.success(request, "Notification preferences saved!")
+
+    return redirect("lsettings")
+@login_required
+def lupdate_privacy(request):
+    if request.method == "POST":
+        p = request.user
+
+        p.profile_visibility = bool(request.POST.get("profile_visibility"))
+        p.activity_status = bool(request.POST.get("activity_status"))
+        p.analytics_enabled = bool(request.POST.get("analytics_enabled"))
+
+        p.save()
+        messages.success(request, "Privacy settings updated!")
+
+    return redirect("lsettings")
+@login_required
+def ldownload_my_data(request):
+    user = request.user
+
+    data = f"""
+    Name: {user.first_name} {user.last_name}
+    Email: {user.email}
+    Phone: {user.phone}
+    """
+
+    response = HttpResponse(data, content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename="my_data.txt"'
+    return response
+@login_required
+def ldelete_account(request):
+    request.user.delete()
+    messages.success(request, "Your account has been deleted.")
+    return redirect("home")
+
 

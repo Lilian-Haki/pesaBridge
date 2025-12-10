@@ -5,7 +5,7 @@
 
         <!-- Header -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-foreground">Welcome back, {{ user.first_name }} {{ user.last_name }}!</h1>
+            <h1 class="text-3xl font-bold text-foreground">Welcome, {{ user.first_name }} {{ user.last_name }} 👋</h1>
             <p class="text-muted-foreground mt-1">Here's an overview of your loans and payments</p>
         </div>
 
@@ -35,7 +35,7 @@
                     <div class="h-full bg-primary" style="width: {{ loan.progress_percent }}%"></div>
                 </div>
                 <div class="flex justify-between text-sm text-muted-foreground mt-1">
-                    <span>Remaining: ${{loan.amount}} + ${{loan.interest_rate}} - ${{loan.paid_amount}}</span>
+                    <span>Total Paid: ${{ loan.paid_amount }}</span>
                     <span>Next Payment: {{ loan.next_payment|default:"N/A" }}</span>
                 </div>
             </div>

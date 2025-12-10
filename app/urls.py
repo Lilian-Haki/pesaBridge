@@ -1,11 +1,12 @@
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth import views as auth_views
 from django.urls import path
 from . import views
+from .views import logout_user
 
 urlpatterns = [
     path('', views.index, name='index'),
     path('login/', views.login_user, name='login'),
-    path("logout/", LogoutView.as_view(next_page="login"), name="logout"),
+    path("logout/", logout_user, name="logout"),
     path('register/', views.register, name='register'),
     path('mpesa/callback/', views.mpesa_stk_callback, name='mpesa_callback'),
     path('export-csv/', views.export_csv, name='export_csv'),
@@ -19,6 +20,12 @@ urlpatterns = [
     path("borrower/apply-loan/", views.apply_loan, name="apply_loan"),
     path("borrower/my-loans/", views.my_loans, name="my_loans"),
     path("borrower/repay-loan/", views.repay_loan, name="repay_loan"),
+    path("settings/update/", views.update_profile, name="update_profile"),
+    path("settings/change-password/", views.change_password, name="change_password"),
+    path("settings/notifications/", views.update_notifications, name="notification_settings"),
+    path("settings/privacy/", views.update_privacy, name="privacy_settings"),
+    path("settings/download-data/", views.download_my_data, name="download_my_data"),
+    path("settings/delete-account/", views.delete_account, name="delete_account"),
 
 
     #LENDER REDIRECTS
@@ -30,4 +37,11 @@ urlpatterns = [
     path("lender/approve/", views.approved_loans, name="approved_loans"),
     path("lender/fund-wallet/", views.fund_wallet, name="fund_wallet"),
     path("lender/transactions/", views.transaction_history, name="transaction_history"),
+    path("lender/lsettings/", views.lsettings_view, name="lsettings"),
+    path("settings/lupdate/", views.lupdate_profile, name="lupdate_profile"),
+    path("settings/lchange-password/", views.lchange_password, name="lchange_password"),
+    path("settings/lnotifications/", views.lupdate_notifications, name="lnotification_settings"),
+    path("settings/lprivacy/", views.lupdate_privacy, name="lprivacy_settings"),
+    path("settings/ldownload-data/", views.ldownload_my_data, name="ldownload_my_data"),
+    path("settings/ldelete-account/", views.ldelete_account, name="ldelete_account"),
 ]

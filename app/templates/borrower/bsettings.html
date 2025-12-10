@@ -80,17 +80,13 @@
 
                                 <div class="space-y-2">
                                     <label>Phone Number</label>
-                                    <input type="text" name="phone" value="{{ profile.phone }}" class="input bg-background/50">
+                                    <input type="text" name="phone" value="{{ user.phone }}" class="input bg-background/50">
                                 </div>
 
-                                <div class="space-y-2 md:col-span-2">
-                                    <label>Address</label>
-                                    <input type="text" name="address" value="{{ profile.address }}" class="input bg-background/50">
-                                </div>
                             </div>
 
                             <div class="flex justify-end">
-                                <button type="submit" class="bg-primary px-4 py-2 rounded-lg text-white hover:bg-primary/90">
+                                <button type="submit" class="bg-gray-400 px-4 py-2 rounded-lg text-gray-800 hover:bg-primary/90">
                                     Save Changes
                                 </button>
                             </div>
@@ -163,15 +159,15 @@
 
                             <h3 class="font-semibold text-foreground">Notification Channels</h3>
 
-                            {% include "settings/toggle_row.html" with label="Email Notifications" name="email_notifications" %}
-                            {% include "settings/toggle_row.html" with label="SMS Notifications" name="sms_notifications" %}
-                            {% include "settings/toggle_row.html" with label="Push Notifications" name="push_notifications" %}
+                            {% include "borrower/toggle_row.html" with label="Email Notifications" name="email_notifications" %}
+                            {% include "borrower/toggle_row.html" with label="SMS Notifications" name="sms_notifications" %}
+                            {% include "borrower/toggle_row.html" with label="Push Notifications" name="push_notifications" %}
 
                             <h3 class="font-semibold mt-6">Notification Types</h3>
 
-                            {% include "settings/toggle_row.html" with label="Loan Updates" name="loan_updates" %}
-                            {% include "settings/toggle_row.html" with label="Payment Reminders" name="payment_reminders" %}
-                            {% include "settings/toggle_row.html" with label="Promotions & Offers" name="promotions" %}
+                            {% include "borrower/toggle_row.html" with label="Loan Updates" name="loan_updates" %}
+                            {% include "borrower/toggle_row.html" with label="Payment Reminders" name="payment_reminders" %}
+                            {% include "borrower/toggle_row.html" with label="Promotions & Offers" name="promotions" %}
 
                             <div class="flex justify-end">
                                 <button class="bg-primary px-4 py-2 rounded-lg text-white hover:bg-primary/90">
@@ -196,9 +192,9 @@
 
                     <div class="p-6 space-y-6">
 
-                        {% include "settings/toggle_row.html" with label="Profile Visibility" %}
-                        {% include "settings/toggle_row.html" with label="Activity Status" %}
-                        {% include "settings/toggle_row.html" with label="Data Analytics" checked=True %}
+                        {% include "borrower/toggle_row.html" with label="Profile Visibility" %}
+                        {% include "borrower/toggle_row.html" with label="Activity Status" %}
+                        {% include "borrower/toggle_row.html" with label="Data Analytics" checked=True %}
 
                         <div class="pt-6 border-t border-border/50 space-y-4">
                             <h3 class="font-semibold text-foreground">Data Management</h3>
