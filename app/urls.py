@@ -1,10 +1,11 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from . import views
-from .views import logout_user, test_mpesa_callback
+from .views import logout_user, test_mpesa_callback, contact_view
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path("contact/", contact_view, name="contact"),
     path('login/', views.login_user, name='login'),
     path("logout/", logout_user, name="logout"),
     path('register/', views.register, name='register'),

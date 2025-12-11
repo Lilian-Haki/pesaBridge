@@ -1,5 +1,9 @@
 import json
 from decimal import Decimal, InvalidOperation
+
+from django.conf import settings
+from django.core.mail import send_mail
+
 from app.mpesa.stk_push import lipa_na_mpesa_stk_push
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models.functions import Coalesce
@@ -13,7 +17,7 @@ from django.http import HttpResponse
 import csv
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import LoanApplicationForm
+from .forms import LoanApplicationForm, ContactForm
 from django.http import JsonResponse
 
 # Create your views here.
@@ -21,6 +25,19 @@ User = get_user_model()
 
 def index(request):
     return render(request, 'index.html')
+def contact_view(request):
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()  # saves to DB
+            # Optionally send email notification here
+            return redirect("contact_success")
+    else:
+        form = ContactForm()
+
+    return render(request, "index.html", {"form": form})
+def contact_success(request):
+    return render(request, "contact_success.html")
 def login_user(request):
     if request.method == "POST":
         username = request.POST["username"]

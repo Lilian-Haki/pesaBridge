@@ -1,6 +1,6 @@
 # loans/forms.py
 from django import forms
-from .models import User
+from .models import User, ContactMessage
 from .models import LoanApplication
 from decimal import Decimal
 
@@ -16,8 +16,6 @@ class PasswordChangeForm(forms.Form):
     new_password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
 
-
-
 class LoanApplicationForm(forms.ModelForm):
     class Meta:
         model = LoanApplication
@@ -25,4 +23,7 @@ class LoanApplicationForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
         }
-
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = ContactMessage
+        fields = ["name", "email", "subject", "message"]

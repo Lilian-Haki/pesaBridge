@@ -301,8 +301,9 @@ A financially inclusive Africa where anyone; regardless of background; can acces
                     <div>
                         <h3 class="text-2xl font-semibold text-gray-700 mb-8">Send us a message</h3>
 
-                        <form class="space-y-6">
-                            <!-- Name & Email -->
+                    <form method="POST" class="space-y-6">
+                        {% csrf_token %}
+                        <!-- Name & Email -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="name" class="block text-lg font-medium text-gray-700 mb-2">Full Name</label>
